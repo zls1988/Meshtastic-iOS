@@ -31,6 +31,7 @@ class MeshtasticManager: NSObject, CBCentralManagerDelegate {
     private var chars: [CBUUID: CBCharacteristic] = [:]
     private var connector: MConnectorProtocol!
 
+    // FIXME: delegate should be weak to avoid reference cycles.
     var delegate: MeshtasticManagerUpdating?
 
     override init() {
@@ -150,7 +151,7 @@ extension MeshtasticManager: CBPeripheralDelegate {
 extension MeshtasticManager: MeshtasticBlueConnecting {
 
     func readValue(from peripheral: CBPeripheral, characteristicID: String) {
-        log("\(peripheral.name): \(characteristicID)")
+        log("\(String(describing: peripheral)): \(characteristicID)")
 
         let charID = CBUUID(string: characteristicID)
 //        let char = service?.characteristics
@@ -162,7 +163,7 @@ extension MeshtasticManager: MeshtasticBlueConnecting {
 
     func peripheralWrite(peripheral: CBPeripheral, data: Data?, characteristicID: String) {
         let charID = CBUUID(string: characteristicID)
-        log("\(peripheral.name): \(characteristicID); \(data)")
+        log("\(String(describing: peripheral)): \(characteristicID); \(data)")
 
         guard let data = data else {
             return

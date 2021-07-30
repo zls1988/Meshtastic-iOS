@@ -39,8 +39,13 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-enum RouteError: SwiftProtobuf.Enum {
+///
+/// A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+/// details on the type of failure).
+enum ErrorReason: SwiftProtobuf.Enum {
   typealias RawValue = Int
+
+  /// This message is not a failure 
   case none // = 0
 
   ///
@@ -51,6 +56,12 @@ enum RouteError: SwiftProtobuf.Enum {
   /// We received a nak while trying to forward on your behalf
   case gotNak // = 2
   case timeout // = 3
+
+  /// No suitable interface could be found for delivering this packet 
+  case noInterface // = 4
+
+  /// We reached the max retransmission count (typically for naive flood routing) 
+  case maxRetransmit // = 5
   case UNRECOGNIZED(Int)
 
   init() {
@@ -63,6 +74,8 @@ enum RouteError: SwiftProtobuf.Enum {
     case 1: self = .noRoute
     case 2: self = .gotNak
     case 3: self = .timeout
+    case 4: self = .noInterface
+    case 5: self = .maxRetransmit
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -73,6 +86,8 @@ enum RouteError: SwiftProtobuf.Enum {
     case .noRoute: return 1
     case .gotNak: return 2
     case .timeout: return 3
+    case .noInterface: return 4
+    case .maxRetransmit: return 5
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -81,13 +96,15 @@ enum RouteError: SwiftProtobuf.Enum {
 
 #if swift(>=4.2)
 
-extension RouteError: CaseIterable {
+extension ErrorReason: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [RouteError] = [
+  static var allCases: [ErrorReason] = [
     .none,
     .noRoute,
     .gotNak,
     .timeout,
+    .noInterface,
+    .maxRetransmit,
   ]
 }
 
@@ -491,6 +508,7 @@ enum CriticalErrorCode: SwiftProtobuf.Enum {
   /// radio comms settings are now undefined.
   case invalidRadioSetting // = 7
 
+  ///
   /// Radio transmit hardware failure. We sent data to the radio chip, but it didn't
   /// reply with an interrupt.
   case transmitFailed // = 8
@@ -685,14 +703,14 @@ struct SubPacket {
 
   ///
   /// Only one of the following fields can be populated at a time
-  var payload: SubPacket.OneOf_Payload? = nil
+  var payloadVariant: SubPacket.OneOf_PayloadVariant? = nil
 
   var data: DataMessage {
     get {
-      if case .data(let v)? = payload {return v}
+      if case .data(let v)? = payloadVariant {return v}
       return DataMessage()
     }
-    set {payload = .data(newValue)}
+    set {payloadVariant = .data(newValue)}
   }
 
   ///
@@ -701,50 +719,51 @@ struct SubPacket {
   /// device plugin mechanism.
   var routeRequest: RouteDiscovery {
     get {
-      if case .routeRequest(let v)? = payload {return v}
+      if case .routeRequest(let v)? = payloadVariant {return v}
       return RouteDiscovery()
     }
-    set {payload = .routeRequest(newValue)}
+    set {payloadVariant = .routeRequest(newValue)}
   }
 
   ///
   /// A route reply
   var routeReply: RouteDiscovery {
     get {
-      if case .routeReply(let v)? = payload {return v}
+      if case .routeReply(let v)? = payloadVariant {return v}
       return RouteDiscovery()
     }
-    set {payload = .routeReply(newValue)}
+    set {payloadVariant = .routeReply(newValue)}
   }
 
   ///
-  /// A failure in a routed message
-  var routeError: RouteError {
+  /// A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+  /// details on the type of failure).
+  var errorReason: ErrorReason {
     get {
-      if case .routeError(let v)? = payload {return v}
+      if case .errorReason(let v)? = payloadVariant {return v}
       return .none
     }
-    set {payload = .routeError(newValue)}
+    set {payloadVariant = .errorReason(newValue)}
   }
 
   ///
   /// Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
   var position: Position {
     get {
-      if case .position(let v)? = payload {return v}
+      if case .position(let v)? = payloadVariant {return v}
       return Position()
     }
-    set {payload = .position(newValue)}
+    set {payloadVariant = .position(newValue)}
   }
 
   ///
   /// Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
   var user: User {
     get {
-      if case .user(let v)? = payload {return v}
+      if case .user(let v)? = payloadVariant {return v}
       return User()
     }
-    set {payload = .user(newValue)}
+    set {payloadVariant = .user(newValue)}
   }
 
   ///
@@ -753,7 +772,7 @@ struct SubPacket {
   /// Note: that if you set this on a broadcast you will receive many replies.
   var wantResponse: Bool = false
 
-  var ack: SubPacket.OneOf_Ack? = nil
+  var ackVariant: SubPacket.OneOf_AckVariant? = nil
 
   ///
   /// This packet is a requested acknoledgement indicating that we have received
@@ -763,20 +782,20 @@ struct SubPacket {
   /// if they think the recipient would appreciate that extra state.
   var successID: UInt32 {
     get {
-      if case .successID(let v)? = ack {return v}
+      if case .successID(let v)? = ackVariant {return v}
       return 0
     }
-    set {ack = .successID(newValue)}
+    set {ackVariant = .successID(newValue)}
   }
 
   ///
   /// This is a nak, we failed to deliver this message.
   var failID: UInt32 {
     get {
-      if case .failID(let v)? = ack {return v}
+      if case .failID(let v)? = ackVariant {return v}
       return 0
     }
-    set {ack = .failID(newValue)}
+    set {ackVariant = .failID(newValue)}
   }
 
   ///
@@ -802,7 +821,7 @@ struct SubPacket {
 
   ///
   /// Only one of the following fields can be populated at a time
-  enum OneOf_Payload: Equatable {
+  enum OneOf_PayloadVariant: Equatable {
     case data(DataMessage)
     ///
     /// A route request going from the requester
@@ -813,8 +832,9 @@ struct SubPacket {
     /// A route reply
     case routeReply(RouteDiscovery)
     ///
-    /// A failure in a routed message
-    case routeError(RouteError)
+    /// A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+    /// details on the type of failure).
+    case errorReason(ErrorReason)
     ///
     /// Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
     case position(Position)
@@ -823,7 +843,7 @@ struct SubPacket {
     case user(User)
 
   #if !swift(>=4.1)
-    static func ==(lhs: SubPacket.OneOf_Payload, rhs: SubPacket.OneOf_Payload) -> Bool {
+    static func ==(lhs: SubPacket.OneOf_PayloadVariant, rhs: SubPacket.OneOf_PayloadVariant) -> Bool {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
@@ -840,8 +860,8 @@ struct SubPacket {
         guard case .routeReply(let l) = lhs, case .routeReply(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.routeError, .routeError): return {
-        guard case .routeError(let l) = lhs, case .routeError(let r) = rhs else { preconditionFailure() }
+      case (.errorReason, .errorReason): return {
+        guard case .errorReason(let l) = lhs, case .errorReason(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       case (.position, .position): return {
@@ -858,7 +878,7 @@ struct SubPacket {
   #endif
   }
 
-  enum OneOf_Ack: Equatable {
+  enum OneOf_AckVariant: Equatable {
     ///
     /// This packet is a requested acknoledgement indicating that we have received
     /// the specified message ID.  This packet type can be used both for immediate
@@ -871,7 +891,7 @@ struct SubPacket {
     case failID(UInt32)
 
   #if !swift(>=4.1)
-    static func ==(lhs: SubPacket.OneOf_Ack, rhs: SubPacket.OneOf_Ack) -> Bool {
+    static func ==(lhs: SubPacket.OneOf_AckVariant, rhs: SubPacket.OneOf_AckVariant) -> Bool {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
@@ -932,25 +952,25 @@ struct MeshPacket {
     set {_uniqueStorage()._channelIndex = newValue}
   }
 
-  var payload: OneOf_Payload? {
-    get {return _storage._payload}
-    set {_uniqueStorage()._payload = newValue}
+  var payloadVariant: OneOf_PayloadVariant? {
+    get {return _storage._payloadVariant}
+    set {_uniqueStorage()._payloadVariant = newValue}
   }
 
   var decoded: SubPacket {
     get {
-      if case .decoded(let v)? = _storage._payload {return v}
+      if case .decoded(let v)? = _storage._payloadVariant {return v}
       return SubPacket()
     }
-    set {_uniqueStorage()._payload = .decoded(newValue)}
+    set {_uniqueStorage()._payloadVariant = .decoded(newValue)}
   }
 
   var encrypted: Data {
     get {
-      if case .encrypted(let v)? = _storage._payload {return v}
+      if case .encrypted(let v)? = _storage._payloadVariant {return v}
       return Data()
     }
-    set {_uniqueStorage()._payload = .encrypted(newValue)}
+    set {_uniqueStorage()._payloadVariant = .encrypted(newValue)}
   }
 
   ///
@@ -1015,12 +1035,12 @@ struct MeshPacket {
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Payload: Equatable {
+  enum OneOf_PayloadVariant: Equatable {
     case decoded(SubPacket)
     case encrypted(Data)
 
   #if !swift(>=4.1)
-    static func ==(lhs: MeshPacket.OneOf_Payload, rhs: MeshPacket.OneOf_Payload) -> Bool {
+    static func ==(lhs: MeshPacket.OneOf_PayloadVariant, rhs: MeshPacket.OneOf_PayloadVariant) -> Bool {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
@@ -1554,6 +1574,39 @@ struct RadioConfig {
       set {_uniqueStorage()._extNotificationPluginAlertBell = newValue}
     }
 
+    ///*
+    ///Preferences for the RangeTestPlugin
+    ///
+    ///FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    var rangeTestPluginEnabled: Bool {
+      get {return _storage._rangeTestPluginEnabled}
+      set {_uniqueStorage()._rangeTestPluginEnabled = newValue}
+    }
+
+    var rangeTestPluginSender: UInt32 {
+      get {return _storage._rangeTestPluginSender}
+      set {_uniqueStorage()._rangeTestPluginSender = newValue}
+    }
+
+    var rangeTestPluginSave: Bool {
+      get {return _storage._rangeTestPluginSave}
+      set {_uniqueStorage()._rangeTestPluginSave = newValue}
+    }
+
+    ///*
+    ///Preferences for the StoreForwardPlugin
+    ///
+    ///FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    var storeForwardPluginEnabled: Bool {
+      get {return _storage._storeForwardPluginEnabled}
+      set {_uniqueStorage()._storeForwardPluginEnabled = newValue}
+    }
+
+    var storeForwardPluginRecords: UInt32 {
+      get {return _storage._storeForwardPluginRecords}
+      set {_uniqueStorage()._storeForwardPluginRecords = newValue}
+    }
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1859,24 +1912,24 @@ struct FromRadio {
   /// The packet num, used to allow the phone to request missing read packets from the FIFO, see our bluetooth docs
   var num: UInt32 = 0
 
-  var variant: FromRadio.OneOf_Variant? = nil
+  var payloadVariant: FromRadio.OneOf_PayloadVariant? = nil
 
   var packet: MeshPacket {
     get {
-      if case .packet(let v)? = variant {return v}
+      if case .packet(let v)? = payloadVariant {return v}
       return MeshPacket()
     }
-    set {variant = .packet(newValue)}
+    set {payloadVariant = .packet(newValue)}
   }
 
   ///
   /// Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
   var myInfo: MyNodeInfo {
     get {
-      if case .myInfo(let v)? = variant {return v}
+      if case .myInfo(let v)? = payloadVariant {return v}
       return MyNodeInfo()
     }
-    set {variant = .myInfo(newValue)}
+    set {payloadVariant = .myInfo(newValue)}
   }
 
   ///
@@ -1884,30 +1937,30 @@ struct FromRadio {
   /// starts over with the first node in our DB
   var nodeInfo: NodeInfo {
     get {
-      if case .nodeInfo(let v)? = variant {return v}
+      if case .nodeInfo(let v)? = payloadVariant {return v}
       return NodeInfo()
     }
-    set {variant = .nodeInfo(newValue)}
+    set {payloadVariant = .nodeInfo(newValue)}
   }
 
   ///
   /// In rev1 this was the radio BLE characteristic
   var radio: RadioConfig {
     get {
-      if case .radio(let v)? = variant {return v}
+      if case .radio(let v)? = payloadVariant {return v}
       return RadioConfig()
     }
-    set {variant = .radio(newValue)}
+    set {payloadVariant = .radio(newValue)}
   }
 
   ///
   /// set to send debug console output over our protobuf stream
   var logRecord: LogRecord {
     get {
-      if case .logRecord(let v)? = variant {return v}
+      if case .logRecord(let v)? = payloadVariant {return v}
       return LogRecord()
     }
-    set {variant = .logRecord(newValue)}
+    set {payloadVariant = .logRecord(newValue)}
   }
 
   ///
@@ -1916,10 +1969,10 @@ struct FromRadio {
   /// not, it means your config responses haven't started yet.
   var configCompleteID: UInt32 {
     get {
-      if case .configCompleteID(let v)? = variant {return v}
+      if case .configCompleteID(let v)? = payloadVariant {return v}
       return 0
     }
-    set {variant = .configCompleteID(newValue)}
+    set {payloadVariant = .configCompleteID(newValue)}
   }
 
   ///
@@ -1927,10 +1980,10 @@ struct FromRadio {
   /// Not used on all transports, currently just used for the serial console.
   var rebooted: Bool {
     get {
-      if case .rebooted(let v)? = variant {return v}
+      if case .rebooted(let v)? = payloadVariant {return v}
       return false
     }
-    set {variant = .rebooted(newValue)}
+    set {payloadVariant = .rebooted(newValue)}
   }
 
   ///
@@ -1939,15 +1992,15 @@ struct FromRadio {
   /// The primary channel is also sent as part of RadioConfig (which is deprecated, but to support older clients)
   var channel: ChannelSettings {
     get {
-      if case .channel(let v)? = variant {return v}
+      if case .channel(let v)? = payloadVariant {return v}
       return ChannelSettings()
     }
-    set {variant = .channel(newValue)}
+    set {payloadVariant = .channel(newValue)}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Variant: Equatable {
+  enum OneOf_PayloadVariant: Equatable {
     case packet(MeshPacket)
     ///
     /// Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
@@ -1978,7 +2031,7 @@ struct FromRadio {
     case channel(ChannelSettings)
 
   #if !swift(>=4.1)
-    static func ==(lhs: FromRadio.OneOf_Variant, rhs: FromRadio.OneOf_Variant) -> Bool {
+    static func ==(lhs: FromRadio.OneOf_PayloadVariant, rhs: FromRadio.OneOf_PayloadVariant) -> Bool {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
@@ -2032,16 +2085,16 @@ struct ToRadio {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var variant: ToRadio.OneOf_Variant? = nil
+  var payloadVariant: ToRadio.OneOf_PayloadVariant? = nil
 
   ///
   /// send this packet on the mesh
   var packet: MeshPacket {
     get {
-      if case .packet(let v)? = variant {return v}
+      if case .packet(let v)? = payloadVariant {return v}
       return MeshPacket()
     }
-    set {variant = .packet(newValue)}
+    set {payloadVariant = .packet(newValue)}
   }
 
   ///
@@ -2055,30 +2108,30 @@ struct ToRadio {
   /// a stale old partially sent config.
   var wantConfigID: UInt32 {
     get {
-      if case .wantConfigID(let v)? = variant {return v}
+      if case .wantConfigID(let v)? = payloadVariant {return v}
       return 0
     }
-    set {variant = .wantConfigID(newValue)}
+    set {payloadVariant = .wantConfigID(newValue)}
   }
 
   ///
   /// set the radio provisioning for this node
   var setRadio: RadioConfig {
     get {
-      if case .setRadio(let v)? = variant {return v}
+      if case .setRadio(let v)? = payloadVariant {return v}
       return RadioConfig()
     }
-    set {variant = .setRadio(newValue)}
+    set {payloadVariant = .setRadio(newValue)}
   }
 
   ///
   /// Set the owner for this node
   var setOwner: User {
     get {
-      if case .setOwner(let v)? = variant {return v}
+      if case .setOwner(let v)? = payloadVariant {return v}
       return User()
     }
-    set {variant = .setOwner(newValue)}
+    set {payloadVariant = .setOwner(newValue)}
   }
 
   ///
@@ -2086,15 +2139,15 @@ struct ToRadio {
   /// index 0 the "primary channel".  Following records are secondary channels.
   var setChannel: ChannelSettings {
     get {
-      if case .setChannel(let v)? = variant {return v}
+      if case .setChannel(let v)? = payloadVariant {return v}
       return ChannelSettings()
     }
-    set {variant = .setChannel(newValue)}
+    set {payloadVariant = .setChannel(newValue)}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  enum OneOf_Variant: Equatable {
+  enum OneOf_PayloadVariant: Equatable {
     ///
     /// send this packet on the mesh
     case packet(MeshPacket)
@@ -2120,7 +2173,7 @@ struct ToRadio {
     case setChannel(ChannelSettings)
 
   #if !swift(>=4.1)
-    static func ==(lhs: ToRadio.OneOf_Variant, rhs: ToRadio.OneOf_Variant) -> Bool {
+    static func ==(lhs: ToRadio.OneOf_PayloadVariant, rhs: ToRadio.OneOf_PayloadVariant) -> Bool {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
@@ -2156,12 +2209,14 @@ struct ToRadio {
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-extension RouteError: SwiftProtobuf._ProtoNameProviding {
+extension ErrorReason: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "NONE"),
     1: .same(proto: "NO_ROUTE"),
     2: .same(proto: "GOT_NAK"),
     3: .same(proto: "TIMEOUT"),
+    4: .same(proto: "NO_INTERFACE"),
+    5: .same(proto: "MAX_RETRANSMIT"),
   ]
 }
 
@@ -2422,7 +2477,7 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     3: .same(proto: "data"),
     6: .standard(proto: "route_request"),
     7: .standard(proto: "route_reply"),
-    13: .standard(proto: "route_error"),
+    13: .standard(proto: "error_reason"),
     1: .same(proto: "position"),
     4: .same(proto: "user"),
     5: .standard(proto: "want_response"),
@@ -2441,70 +2496,96 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       switch fieldNumber {
       case 1: try {
         var v: Position?
-        if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .position(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .position(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .position(v)
+        }
       }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self.originalID) }()
       case 3: try {
         var v: DataMessage?
-        if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .data(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .data(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .data(v)
+        }
       }()
       case 4: try {
         var v: User?
-        if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .user(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .user(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .user(v)
+        }
       }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.wantResponse) }()
       case 6: try {
         var v: RouteDiscovery?
-        if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .routeRequest(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .routeRequest(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .routeRequest(v)
+        }
       }()
       case 7: try {
         var v: RouteDiscovery?
-        if let current = self.payload {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .routeReply(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.payload = .routeReply(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .routeReply(v)
+        }
       }()
       case 9: try { try decoder.decodeSingularUInt32Field(value: &self.dest) }()
       case 10: try {
-        if self.ack != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {self.ack = .successID(v)}
+        if let v = v {
+          if self.ackVariant != nil {try decoder.handleConflictingOneOf()}
+          self.ackVariant = .successID(v)
+        }
       }()
       case 11: try {
-        if self.ack != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {self.ack = .failID(v)}
+        if let v = v {
+          if self.ackVariant != nil {try decoder.handleConflictingOneOf()}
+          self.ackVariant = .failID(v)
+        }
       }()
       case 12: try { try decoder.decodeSingularUInt32Field(value: &self.source) }()
       case 13: try {
-        if self.payload != nil {try decoder.handleConflictingOneOf()}
-        var v: RouteError?
+        var v: ErrorReason?
         try decoder.decodeSingularEnumField(value: &v)
-        if let v = v {self.payload = .routeError(v)}
+        if let v = v {
+          if self.payloadVariant != nil {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .errorReason(v)
+        }
       }()
       default: break
       }
@@ -2512,7 +2593,7 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if case .position(let v)? = self.payload {
+    if case .position(let v)? = self.payloadVariant {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }
     if self.originalID != 0 {
@@ -2521,13 +2602,13 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every case branch when no optimizations are
     // enabled. https://github.com/apple/swift-protobuf/issues/1034
-    switch self.payload {
+    switch self.payloadVariant {
     case .data?: try {
-      guard case .data(let v)? = self.payload else { preconditionFailure() }
+      guard case .data(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }()
     case .user?: try {
-      guard case .user(let v)? = self.payload else { preconditionFailure() }
+      guard case .user(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
     default: break
@@ -2538,13 +2619,13 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every case branch when no optimizations are
     // enabled. https://github.com/apple/swift-protobuf/issues/1034
-    switch self.payload {
+    switch self.payloadVariant {
     case .routeRequest?: try {
-      guard case .routeRequest(let v)? = self.payload else { preconditionFailure() }
+      guard case .routeRequest(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case .routeReply?: try {
-      guard case .routeReply(let v)? = self.payload else { preconditionFailure() }
+      guard case .routeReply(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     default: break
@@ -2555,13 +2636,13 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every case branch when no optimizations are
     // enabled. https://github.com/apple/swift-protobuf/issues/1034
-    switch self.ack {
+    switch self.ackVariant {
     case .successID?: try {
-      guard case .successID(let v)? = self.ack else { preconditionFailure() }
+      guard case .successID(let v)? = self.ackVariant else { preconditionFailure() }
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
     }()
     case .failID?: try {
-      guard case .failID(let v)? = self.ack else { preconditionFailure() }
+      guard case .failID(let v)? = self.ackVariant else { preconditionFailure() }
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 11)
     }()
     case nil: break
@@ -2569,16 +2650,16 @@ extension SubPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     if self.source != 0 {
       try visitor.visitSingularUInt32Field(value: self.source, fieldNumber: 12)
     }
-    if case .routeError(let v)? = self.payload {
+    if case .errorReason(let v)? = self.payloadVariant {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 13)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SubPacket, rhs: SubPacket) -> Bool {
-    if lhs.payload != rhs.payload {return false}
+    if lhs.payloadVariant != rhs.payloadVariant {return false}
     if lhs.wantResponse != rhs.wantResponse {return false}
-    if lhs.ack != rhs.ack {return false}
+    if lhs.ackVariant != rhs.ackVariant {return false}
     if lhs.dest != rhs.dest {return false}
     if lhs.source != rhs.source {return false}
     if lhs.originalID != rhs.originalID {return false}
@@ -2606,7 +2687,7 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
     var _from: UInt32 = 0
     var _to: UInt32 = 0
     var _channelIndex: UInt32 = 0
-    var _payload: MeshPacket.OneOf_Payload?
+    var _payloadVariant: MeshPacket.OneOf_PayloadVariant?
     var _id: UInt32 = 0
     var _rxTime: UInt32 = 0
     var _rxSnr: Float = 0
@@ -2621,7 +2702,7 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
       _from = source._from
       _to = source._to
       _channelIndex = source._channelIndex
-      _payload = source._payload
+      _payloadVariant = source._payloadVariant
       _id = source._id
       _rxTime = source._rxTime
       _rxSnr = source._rxSnr
@@ -2649,21 +2730,27 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
         case 2: try { try decoder.decodeSingularUInt32Field(value: &_storage._to) }()
         case 3: try {
           var v: SubPacket?
-          if let current = _storage._payload {
-            try decoder.handleConflictingOneOf()
+          var hadOneofValue = false
+          if let current = _storage._payloadVariant {
+            hadOneofValue = true
             if case .decoded(let m) = current {v = m}
           }
           try decoder.decodeSingularMessageField(value: &v)
-          if let v = v {_storage._payload = .decoded(v)}
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._payloadVariant = .decoded(v)
+          }
         }()
         case 4: try { try decoder.decodeSingularUInt32Field(value: &_storage._channelIndex) }()
         case 6: try { try decoder.decodeSingularUInt32Field(value: &_storage._id) }()
         case 7: try { try decoder.decodeSingularFloatField(value: &_storage._rxSnr) }()
         case 8: try {
-          if _storage._payload != nil {try decoder.handleConflictingOneOf()}
           var v: Data?
           try decoder.decodeSingularBytesField(value: &v)
-          if let v = v {_storage._payload = .encrypted(v)}
+          if let v = v {
+            if _storage._payloadVariant != nil {try decoder.handleConflictingOneOf()}
+            _storage._payloadVariant = .encrypted(v)
+          }
         }()
         case 9: try { try decoder.decodeSingularFixed32Field(value: &_storage._rxTime) }()
         case 10: try { try decoder.decodeSingularUInt32Field(value: &_storage._hopLimit) }()
@@ -2682,7 +2769,7 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
       if _storage._to != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._to, fieldNumber: 2)
       }
-      if case .decoded(let v)? = _storage._payload {
+      if case .decoded(let v)? = _storage._payloadVariant {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
       }
       if _storage._channelIndex != 0 {
@@ -2694,7 +2781,7 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
       if _storage._rxSnr != 0 {
         try visitor.visitSingularFloatField(value: _storage._rxSnr, fieldNumber: 7)
       }
-      if case .encrypted(let v)? = _storage._payload {
+      if case .encrypted(let v)? = _storage._payloadVariant {
         try visitor.visitSingularBytesField(value: v, fieldNumber: 8)
       }
       if _storage._rxTime != 0 {
@@ -2718,7 +2805,7 @@ extension MeshPacket: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementatio
         if _storage._from != rhs_storage._from {return false}
         if _storage._to != rhs_storage._to {return false}
         if _storage._channelIndex != rhs_storage._channelIndex {return false}
-        if _storage._payload != rhs_storage._payload {return false}
+        if _storage._payloadVariant != rhs_storage._payloadVariant {return false}
         if _storage._id != rhs_storage._id {return false}
         if _storage._rxTime != rhs_storage._rxTime {return false}
         if _storage._rxSnr != rhs_storage._rxSnr {return false}
@@ -2912,6 +2999,11 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
     129: .standard(proto: "ext_notification_plugin_active"),
     130: .standard(proto: "ext_notification_plugin_alert_message"),
     131: .standard(proto: "ext_notification_plugin_alert_bell"),
+    132: .standard(proto: "range_test_plugin_enabled"),
+    133: .standard(proto: "range_test_plugin_sender"),
+    134: .standard(proto: "range_test_plugin_save"),
+    136: .standard(proto: "store_forward_plugin_enabled"),
+    137: .standard(proto: "store_forward_plugin_records"),
   ]
 
   fileprivate class _StorageClass {
@@ -2952,6 +3044,11 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
     var _extNotificationPluginActive: Bool = false
     var _extNotificationPluginAlertMessage: Bool = false
     var _extNotificationPluginAlertBell: Bool = false
+    var _rangeTestPluginEnabled: Bool = false
+    var _rangeTestPluginSender: UInt32 = 0
+    var _rangeTestPluginSave: Bool = false
+    var _storeForwardPluginEnabled: Bool = false
+    var _storeForwardPluginRecords: UInt32 = 0
 
     static let defaultInstance = _StorageClass()
 
@@ -2995,6 +3092,11 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
       _extNotificationPluginActive = source._extNotificationPluginActive
       _extNotificationPluginAlertMessage = source._extNotificationPluginAlertMessage
       _extNotificationPluginAlertBell = source._extNotificationPluginAlertBell
+      _rangeTestPluginEnabled = source._rangeTestPluginEnabled
+      _rangeTestPluginSender = source._rangeTestPluginSender
+      _rangeTestPluginSave = source._rangeTestPluginSave
+      _storeForwardPluginEnabled = source._storeForwardPluginEnabled
+      _storeForwardPluginRecords = source._storeForwardPluginRecords
     }
   }
 
@@ -3050,6 +3152,11 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
         case 129: try { try decoder.decodeSingularBoolField(value: &_storage._extNotificationPluginActive) }()
         case 130: try { try decoder.decodeSingularBoolField(value: &_storage._extNotificationPluginAlertMessage) }()
         case 131: try { try decoder.decodeSingularBoolField(value: &_storage._extNotificationPluginAlertBell) }()
+        case 132: try { try decoder.decodeSingularBoolField(value: &_storage._rangeTestPluginEnabled) }()
+        case 133: try { try decoder.decodeSingularUInt32Field(value: &_storage._rangeTestPluginSender) }()
+        case 134: try { try decoder.decodeSingularBoolField(value: &_storage._rangeTestPluginSave) }()
+        case 136: try { try decoder.decodeSingularBoolField(value: &_storage._storeForwardPluginEnabled) }()
+        case 137: try { try decoder.decodeSingularUInt32Field(value: &_storage._storeForwardPluginRecords) }()
         default: break
         }
       }
@@ -3169,6 +3276,21 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
       if _storage._extNotificationPluginAlertBell != false {
         try visitor.visitSingularBoolField(value: _storage._extNotificationPluginAlertBell, fieldNumber: 131)
       }
+      if _storage._rangeTestPluginEnabled != false {
+        try visitor.visitSingularBoolField(value: _storage._rangeTestPluginEnabled, fieldNumber: 132)
+      }
+      if _storage._rangeTestPluginSender != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._rangeTestPluginSender, fieldNumber: 133)
+      }
+      if _storage._rangeTestPluginSave != false {
+        try visitor.visitSingularBoolField(value: _storage._rangeTestPluginSave, fieldNumber: 134)
+      }
+      if _storage._storeForwardPluginEnabled != false {
+        try visitor.visitSingularBoolField(value: _storage._storeForwardPluginEnabled, fieldNumber: 136)
+      }
+      if _storage._storeForwardPluginRecords != 0 {
+        try visitor.visitSingularUInt32Field(value: _storage._storeForwardPluginRecords, fieldNumber: 137)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3215,6 +3337,11 @@ extension RadioConfig.UserPreferences: SwiftProtobuf.Message, SwiftProtobuf._Mes
         if _storage._extNotificationPluginActive != rhs_storage._extNotificationPluginActive {return false}
         if _storage._extNotificationPluginAlertMessage != rhs_storage._extNotificationPluginAlertMessage {return false}
         if _storage._extNotificationPluginAlertBell != rhs_storage._extNotificationPluginAlertBell {return false}
+        if _storage._rangeTestPluginEnabled != rhs_storage._rangeTestPluginEnabled {return false}
+        if _storage._rangeTestPluginSender != rhs_storage._rangeTestPluginSender {return false}
+        if _storage._rangeTestPluginSave != rhs_storage._rangeTestPluginSave {return false}
+        if _storage._storeForwardPluginEnabled != rhs_storage._storeForwardPluginEnabled {return false}
+        if _storage._storeForwardPluginRecords != rhs_storage._storeForwardPluginRecords {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3475,69 +3602,97 @@ extension FromRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self.num) }()
       case 2: try {
         var v: MeshPacket?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .packet(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .packet(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .packet(v)
+        }
       }()
       case 3: try {
         var v: MyNodeInfo?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .myInfo(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .myInfo(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .myInfo(v)
+        }
       }()
       case 4: try {
         var v: NodeInfo?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .nodeInfo(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .nodeInfo(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .nodeInfo(v)
+        }
       }()
       case 6: try {
         var v: RadioConfig?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .radio(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .radio(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .radio(v)
+        }
       }()
       case 7: try {
         var v: LogRecord?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .logRecord(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .logRecord(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .logRecord(v)
+        }
       }()
       case 8: try {
-        if self.variant != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {self.variant = .configCompleteID(v)}
+        if let v = v {
+          if self.payloadVariant != nil {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .configCompleteID(v)
+        }
       }()
       case 9: try {
-        if self.variant != nil {try decoder.handleConflictingOneOf()}
         var v: Bool?
         try decoder.decodeSingularBoolField(value: &v)
-        if let v = v {self.variant = .rebooted(v)}
+        if let v = v {
+          if self.payloadVariant != nil {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .rebooted(v)
+        }
       }()
       case 10: try {
         var v: ChannelSettings?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .channel(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .channel(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .channel(v)
+        }
       }()
       default: break
       }
@@ -3551,37 +3706,37 @@ extension FromRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every case branch when no optimizations are
     // enabled. https://github.com/apple/swift-protobuf/issues/1034
-    switch self.variant {
+    switch self.payloadVariant {
     case .packet?: try {
-      guard case .packet(let v)? = self.variant else { preconditionFailure() }
+      guard case .packet(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
     }()
     case .myInfo?: try {
-      guard case .myInfo(let v)? = self.variant else { preconditionFailure() }
+      guard case .myInfo(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }()
     case .nodeInfo?: try {
-      guard case .nodeInfo(let v)? = self.variant else { preconditionFailure() }
+      guard case .nodeInfo(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
     case .radio?: try {
-      guard case .radio(let v)? = self.variant else { preconditionFailure() }
+      guard case .radio(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case .logRecord?: try {
-      guard case .logRecord(let v)? = self.variant else { preconditionFailure() }
+      guard case .logRecord(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }()
     case .configCompleteID?: try {
-      guard case .configCompleteID(let v)? = self.variant else { preconditionFailure() }
+      guard case .configCompleteID(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
     }()
     case .rebooted?: try {
-      guard case .rebooted(let v)? = self.variant else { preconditionFailure() }
+      guard case .rebooted(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularBoolField(value: v, fieldNumber: 9)
     }()
     case .channel?: try {
-      guard case .channel(let v)? = self.variant else { preconditionFailure() }
+      guard case .channel(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
     }()
     case nil: break
@@ -3591,7 +3746,7 @@ extension FromRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementation
 
   static func ==(lhs: FromRadio, rhs: FromRadio) -> Bool {
     if lhs.num != rhs.num {return false}
-    if lhs.variant != rhs.variant {return false}
+    if lhs.payloadVariant != rhs.payloadVariant {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3615,45 +3770,63 @@ extension ToRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
       switch fieldNumber {
       case 1: try {
         var v: MeshPacket?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .packet(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .packet(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .packet(v)
+        }
       }()
       case 100: try {
-        if self.variant != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {self.variant = .wantConfigID(v)}
+        if let v = v {
+          if self.payloadVariant != nil {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .wantConfigID(v)
+        }
       }()
       case 101: try {
         var v: RadioConfig?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .setRadio(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .setRadio(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .setRadio(v)
+        }
       }()
       case 102: try {
         var v: User?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .setOwner(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .setOwner(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .setOwner(v)
+        }
       }()
       case 103: try {
         var v: ChannelSettings?
-        if let current = self.variant {
-          try decoder.handleConflictingOneOf()
+        var hadOneofValue = false
+        if let current = self.payloadVariant {
+          hadOneofValue = true
           if case .setChannel(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {self.variant = .setChannel(v)}
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.payloadVariant = .setChannel(v)
+        }
       }()
       default: break
       }
@@ -3664,25 +3837,25 @@ extension ToRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every case branch when no optimizations are
     // enabled. https://github.com/apple/swift-protobuf/issues/1034
-    switch self.variant {
+    switch self.payloadVariant {
     case .packet?: try {
-      guard case .packet(let v)? = self.variant else { preconditionFailure() }
+      guard case .packet(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     }()
     case .wantConfigID?: try {
-      guard case .wantConfigID(let v)? = self.variant else { preconditionFailure() }
+      guard case .wantConfigID(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 100)
     }()
     case .setRadio?: try {
-      guard case .setRadio(let v)? = self.variant else { preconditionFailure() }
+      guard case .setRadio(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
     }()
     case .setOwner?: try {
-      guard case .setOwner(let v)? = self.variant else { preconditionFailure() }
+      guard case .setOwner(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 102)
     }()
     case .setChannel?: try {
-      guard case .setChannel(let v)? = self.variant else { preconditionFailure() }
+      guard case .setChannel(let v)? = self.payloadVariant else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 103)
     }()
     case nil: break
@@ -3691,7 +3864,7 @@ extension ToRadio: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBa
   }
 
   static func ==(lhs: ToRadio, rhs: ToRadio) -> Bool {
-    if lhs.variant != rhs.variant {return false}
+    if lhs.payloadVariant != rhs.payloadVariant {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

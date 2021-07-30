@@ -71,7 +71,7 @@ class MConnector: MConnectorProtocol {
                     let fromRadio = try FromRadio(serializedData: data)
                     bleManager.readValue(from: peripheral, characteristicID: Chars.fromRadioCharacteristicUUID)
 
-                    switch fromRadio.variant {
+                    switch fromRadio.payloadVariant {
                     case .radio(let value):
                         debugLog("radioConfig:\n    \(value.debugDescription)", space: .mesh)
 

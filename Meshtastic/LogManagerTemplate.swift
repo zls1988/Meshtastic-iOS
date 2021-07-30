@@ -13,9 +13,9 @@ enum DebugLevel: Int {
 }
 
 enum DebugSpace: String {
-    case generic = "generic"
-    case network = "network"
-    case mesh = "mesh"
+    case generic
+    case network
+    case mesh
 }
 
 func debugLog(_ debugText: String, level: DebugLevel = .debug, space: DebugSpace = .generic, function: String = #function) {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct DeviceDetailView: View {
     @Binding var device: DeviceInfo
@@ -26,9 +27,6 @@ struct DeviceDetailView_Previews: PreviewProvider {
         DeviceDetailView(device: .constant(DeviceInfo.stub()))
     }
 }
-
-import MapKit
-import SwiftUI
 
 struct MapLocationView: View {
     @State var location: CLLocation

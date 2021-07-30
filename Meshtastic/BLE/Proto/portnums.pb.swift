@@ -96,10 +96,10 @@ enum PortNum: SwiftProtobuf.Enum {
   case serialApp // = 64
 
   ///
-  /// STORE_REQUEST_APP (Work in Progress)
+  /// STORE_FORWARD_APP (Work in Progress)
   ///
   /// Maintained by Jm Casler (MC Hamster) : jm@casler.org
-  case storeRequestApp // = 65
+  case storeForwardApp // = 65
 
   ///
   /// Private applications should use portnums >= 256.
@@ -126,7 +126,7 @@ enum PortNum: SwiftProtobuf.Enum {
     case 32: self = .replyApp
     case 33: self = .ipTunnelApp
     case 64: self = .serialApp
-    case 65: self = .storeRequestApp
+    case 65: self = .storeForwardApp
     case 256: self = .privateApp
     case 257: self = .atakForwarder
     default: self = .UNRECOGNIZED(rawValue)
@@ -143,7 +143,7 @@ enum PortNum: SwiftProtobuf.Enum {
     case .replyApp: return 32
     case .ipTunnelApp: return 33
     case .serialApp: return 64
-    case .storeRequestApp: return 65
+    case .storeForwardApp: return 65
     case .privateApp: return 256
     case .atakForwarder: return 257
     case .UNRECOGNIZED(let i): return i
@@ -165,7 +165,7 @@ extension PortNum: CaseIterable {
     .replyApp,
     .ipTunnelApp,
     .serialApp,
-    .storeRequestApp,
+    .storeForwardApp,
     .privateApp,
     .atakForwarder,
   ]
@@ -185,7 +185,7 @@ extension PortNum: SwiftProtobuf._ProtoNameProviding {
     32: .same(proto: "REPLY_APP"),
     33: .same(proto: "IP_TUNNEL_APP"),
     64: .same(proto: "SERIAL_APP"),
-    65: .same(proto: "STORE_REQUEST_APP"),
+    65: .same(proto: "STORE_FORWARD_APP"),
     256: .same(proto: "PRIVATE_APP"),
     257: .same(proto: "ATAK_FORWARDER"),
   ]
