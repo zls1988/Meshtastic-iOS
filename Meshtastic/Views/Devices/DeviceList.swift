@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DeviceList: View {
     @Binding var devices: [MeshDevice]
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -27,7 +27,7 @@ struct DeviceList: View {
             .navigationBarTitle(Text("Devices"))
         }
     }
-    
+
 //    private func binding(for devices: DeviceInfo) -> Binding<MeshDevice> {
 //        guard let index = devices.firstIndex(where: { $0.id == devices.id }) else {
 //            fatalError("Can't find scrum in array")
@@ -38,7 +38,7 @@ struct DeviceList: View {
 }
 
 struct DevicesView_Previews: PreviewProvider {
-    
+
     static var previews: some View {
         DeviceList(devices: .constant(MeshDevice.data))
     }
@@ -49,4 +49,3 @@ extension MeshDevice {
         [MeshDevice.stub(), MeshDevice.stub()]
     }
 }
-

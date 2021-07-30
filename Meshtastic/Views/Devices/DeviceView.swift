@@ -9,10 +9,10 @@ import SwiftUI
 
 struct DeviceView: View {
     var device: DeviceInfo
-    
+
     var body: some View {
-        VStack{
-            HStack{
+        VStack {
+            HStack {
                 if device.isConnected {
                     Image(systemName: "checkmark")
                 }
@@ -21,7 +21,7 @@ struct DeviceView: View {
                     .lineLimit(0)
                 Text(device.name)
                 VStack(alignment: .leading) {
-                    HStack{
+                    HStack {
                         if let lastTime = device.timeString {
                             Image(systemName: "timer")
                             Text("\(lastTime)")
@@ -29,7 +29,7 @@ struct DeviceView: View {
                                 .font(.system(size: 12))
                         }
                     }
-                    HStack{
+                    HStack {
                         if let location = device.location {
                             Image(systemName: "location")
                             Text("\(String(format: "%.2f", location.coordinate.latitude))")

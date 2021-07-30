@@ -21,7 +21,7 @@
 		D55D9DC9253EA94E005085B4 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55D9DC8253EA94D005085B4 /* MapView.swift */; };
 		D55D9DCC253EA95C005085B4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55D9DCB253EA95C005085B4 /* SettingsView.swift */; };
 		D55D9DD4253EACFA005085B4 /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55D9DD3253EACFA005085B4 /* DeviceList.swift */; };
-		D5971DF925D0B22C002ED9FF /* Meshtastic_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5971DF725D0B22C002ED9FF /* Meshtastic_iOSApp.swift */; };
+		D5971DF925D0B22C002ED9FF /* MeshtasticApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */; };
 		D5971DFA25D0B22C002ED9FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5971DF825D0B22C002ED9FF /* ContentView.swift */; };
 		D5A89FEC253D20130012982E /* MeshtasticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A89FE9253D20130012982E /* MeshtasticManager.swift */; };
 		D5A89FED253D20130012982E /* MConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A89FEA253D20130012982E /* MConnector.swift */; };
@@ -50,7 +50,7 @@
 		D55D9DC8253EA94D005085B4 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		D55D9DCB253EA95C005085B4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D55D9DD3253EACFA005085B4 /* DeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceList.swift; sourceTree = "<group>"; };
-		D5971DF725D0B22C002ED9FF /* Meshtastic_iOSApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meshtastic_iOSApp.swift; sourceTree = "<group>"; };
+		D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshtasticApp.swift; sourceTree = "<group>"; };
 		D5971DF825D0B22C002ED9FF /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5A89FCB253D1EF60012982E /* device-api.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "device-api.md"; sourceTree = "<group>"; };
 		D5A89FE9253D20130012982E /* MeshtasticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshtasticManager.swift; sourceTree = "<group>"; };
@@ -118,7 +118,7 @@
 				D5249004251ED4E700CF50E6 /* README.md */,
 				0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */,
 				D5971DF825D0B22C002ED9FF /* ContentView.swift */,
-				D5971DF725D0B22C002ED9FF /* Meshtastic_iOSApp.swift */,
+				D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */,
 				D5A89FEB253D20130012982E /* LogManager.swift */,
 				0DEE521725D0EAC6003C6EB7 /* Models */,
 				D5A89FE8253D20130012982E /* BLE */,
@@ -180,6 +180,7 @@
 			buildConfigurationList = D5248FE3251ED2FB00CF50E6 /* Build configuration list for PBXNativeTarget "Meshtastic" */;
 			buildPhases = (
 				D5248FB5251ED2F900CF50E6 /* Sources */,
+				390258F826B445C200C31BF8 /* ShellScript */,
 				D5248FB6251ED2F900CF50E6 /* Frameworks */,
 				D5248FB7251ED2F900CF50E6 /* Resources */,
 			);
@@ -242,6 +243,26 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		390258F826B445C200C31BF8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Swiftlint\nif which swiftlint >/dev/null; then\n#  swiftlint autocorrect && swiftlint - uncomment this for autocorrection\n   swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D5248FB5251ED2F900CF50E6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -249,7 +270,7 @@
 			files = (
 				D55D9DC6253EA944005085B4 /* ChatView.swift in Sources */,
 				D55D9DC9253EA94E005085B4 /* MapView.swift in Sources */,
-				D5971DF925D0B22C002ED9FF /* Meshtastic_iOSApp.swift in Sources */,
+				D5971DF925D0B22C002ED9FF /* MeshtasticApp.swift in Sources */,
 				0D164ED825D1A3C700E9B91B /* MeshDeviceView.swift in Sources */,
 				D55AC0AE25D0A63A00151E9D /* DeviceView.swift in Sources */,
 				0DEE520D25D0BE8B003C6EB7 /* DeviceDetailView.swift in Sources */,
@@ -449,7 +470,7 @@
 				D5248FE2251ED2FB00CF50E6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		D5248FE3251ED2FB00CF50E6 /* Build configuration list for PBXNativeTarget "Meshtastic" */ = {
 			isa = XCConfigurationList;
@@ -458,7 +479,7 @@
 				D5248FE5251ED2FB00CF50E6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

@@ -16,7 +16,7 @@ struct AppView: View {
         setDebugLevel(level: .info, for: .network)
         setDebugLevel(level: .debug, for: .mesh)
     }
-    
+
     var body: some View {
         TabView {
             ChatView()
@@ -51,4 +51,3 @@ struct AppView_Previews: PreviewProvider {
         AppView()
     }
 }
-

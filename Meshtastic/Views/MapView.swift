@@ -11,7 +11,7 @@ import MapKit
 
 struct MapView: View {
     @Binding var devices: [MeshDevice]
-    
+
     var body: some View {
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 49.0, longitude: -123.0), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
         Map(coordinateRegion: .constant(region))
@@ -23,4 +23,3 @@ struct MapView_Previews: PreviewProvider {
         MapView(devices: .constant(MeshDevice.data))
     }
 }
-

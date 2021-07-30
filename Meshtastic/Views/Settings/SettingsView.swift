@@ -14,23 +14,23 @@ import CoreBluetooth
  */
 
 struct SettingsView: View {
-    var manager : MeshtasticManager!
-    @State private var peripheral: CBPeripheral? = nil
-    
+    var manager: MeshtasticManager!
+    @State private var peripheral: CBPeripheral?
+
     @Binding var meshDevices: [MeshDevice]
     @Binding var devices: [DeviceInfo]
     @State private var showConnectDeviceAlert = false
     @State private var showDisconnectDeviceAlert = false
 
     @State var reloadView: String?
-    
+
     init(meshDevices: Binding<[MeshDevice]>, devices: Binding<[DeviceInfo]>) {
         self._meshDevices = meshDevices
         self._devices = devices
         manager = MeshtasticManager()
         manager.delegate = self
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -70,7 +70,7 @@ struct SettingsView: View {
             .navigationBarTitle(Text("Settings"))
         }
     }
-    
+
     private func connectDeviceAlert(device: DeviceInfo) -> Alert {
         let deviceName = device.name
 
@@ -112,31 +112,31 @@ struct SettingsView: View {
 }
 
 extension SettingsView: MeshtasticManagerUpdating {
-    
+
     func didReceiveConfig() {
-        Log("")
+        log("")
     }
-    
+
     func didDiscoverDevice(name: String?, peripheral: CBPeripheral, RSSI: NSNumber) {
-        Log("😺 😺 😺 \(RSSI): \(String(describing: name));\n\(String(describing: peripheral.name))")
+        log("😺 😺 😺 \(RSSI): \(String(describing: name));\n\(String(describing: peripheral.name))")
         let device = DeviceInfo(id: peripheral.identifier.uuidString, name: peripheral.name ?? "N/A", lastTime: Date(), location: nil)
         device.peripheral = peripheral
         device.rssi = RSSI.doubleValue
         devices.append(device)
     }
-    
+
     func didConnect(to peripheral: CBPeripheral) {
         reloadView = UUID().uuidString
-        Log("\(peripheral)")
-        
+        log("\(peripheral)")
+
         let newDev = devices
         devices = newDev
     }
-    
+
     func didDisconnect(to peripheral: CBPeripheral) {
         reloadView = UUID().uuidString
-        Log("\(peripheral)")
-        
+        log("\(peripheral)")
+
         let newDev = devices
         devices = newDev
     }

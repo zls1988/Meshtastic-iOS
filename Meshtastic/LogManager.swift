@@ -8,7 +8,7 @@
 
 import Foundation
 
-func Log(_ text: Any?, funcName: String = #function) {
+func log(_ text: Any?, funcName: String = #function) {
     if let text = (text as AnyObject).description {
         print("\(funcName):\n\(text.description)")
     } else {
@@ -23,9 +23,9 @@ extension Data {
 }
 
 extension Data {
-    
+
     func toString() -> String {
         return self.map { String(format: "%02hhx", $0) }.joined()
     }
-    
+
 }

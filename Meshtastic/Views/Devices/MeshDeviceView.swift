@@ -9,10 +9,10 @@ import SwiftUI
 
 struct MeshDeviceView: View {
     var device: MeshDevice
-    
+
     var body: some View {
-        VStack{
-            HStack{
+        VStack {
+            HStack {
                 Image(systemName: "person")
                     .font(.system(size: 12))
                     .lineLimit(0)

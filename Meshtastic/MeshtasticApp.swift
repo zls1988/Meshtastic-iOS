@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct Meshtastic_iOSApp: App {
+struct MeshtasticApp: App {
     var body: some Scene {
         WindowGroup {
             AppView()

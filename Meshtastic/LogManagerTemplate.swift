@@ -27,7 +27,7 @@ func debugLog(_ debugText: String, level: DebugLevel = .debug, space: DebugSpace
 private class LogManager: NSObject {
     static let shared = LogManager()
     var fileHandle: FileHandle?
-    
+
     fileprivate var debugLevel = [DebugSpace: DebugLevel]()
     private let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
@@ -35,7 +35,7 @@ private class LogManager: NSObject {
         dateFormatter.timeStyle = .medium
         return dateFormatter
     }()
-    
+
     override init() {
         #if DEBUG
             let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
@@ -55,42 +55,42 @@ private class LogManager: NSObject {
 
     func log(_ debugText: String, level: DebugLevel, space: DebugSpace) {
         #if DEBUG
-        
+
         guard isDebugAllowed(level: level, space: space) else {
             return
         }
 
-        let dateString = dateFormatter.string(from:Date())
+        let dateString = dateFormatter.string(from: Date())
         let outputTextForLogging = "\(dateString): \(debugText)\n"
         if let data = outputTextForLogging.data(using: .utf8) {
             fileHandle?.write(data)
         }
 
         var prefix: String = ""
-        
+
         switch level {
         case .error:
             prefix.append("🔥")
         default:
             break
         }
-        
+
         switch space {
         case .mesh:
             prefix.append("🐸🐸🐸")
         default:
             break
         }
-        
+
         print("\(prefix) \(debugText)")
         #endif
     }
-    
+
     private func isDebugAllowed(level requestedLevel: DebugLevel, space: DebugSpace) -> Bool {
         guard let allowedLevel = debugLevel[space] else {
             return false
         }
         return allowedLevel.rawValue <= requestedLevel.rawValue
     }
-    
+
 }

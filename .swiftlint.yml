@@ -1,0 +1,4 @@
+included:
+  - Meshtastic/
+excluded:
+  - Meshtastic/BLE/Proto

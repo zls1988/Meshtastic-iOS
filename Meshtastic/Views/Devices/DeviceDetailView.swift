@@ -9,9 +9,9 @@ import SwiftUI
 
 struct DeviceDetailView: View {
     @Binding var device: DeviceInfo
-    
+
     var body: some View {
-        VStack(){
+        VStack {
             DeviceView(device: device)
             .padding()
             if let location = device.location {
@@ -34,7 +34,8 @@ struct MapLocationView: View {
     @State var location: CLLocation
 
     var body: some View {
-        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude,
+                                                                       longitude: location.coordinate.longitude), span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5))
         Map(coordinateRegion: .constant(region))
     }
 }
