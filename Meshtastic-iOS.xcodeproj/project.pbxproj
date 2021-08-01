@@ -262,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Swiftlint\nif which swiftlint >/dev/null; then\n#  swiftlint autocorrect && swiftlint - uncomment this for autocorrection\n   swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "# Swiftlint\nif which swiftlint >/dev/null; then\n#  swiftlint autocorrect trailing_whitespace && swiftlint\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
