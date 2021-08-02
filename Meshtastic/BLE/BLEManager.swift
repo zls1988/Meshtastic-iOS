@@ -8,56 +8,87 @@
 import Foundation
 import CoreBluetooth
 
+protocol BLEManagerProtocol: AnyObject {
+    func scan(for timeout: Int, onComplite: @escaping ([CBPeripheral]) -> Void)
+    func rescan(onComplite: @escaping ([CBPeripheral]) -> Void)
+    func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void)
+    func drop()
+}
+
+protocol MeshtasticBLEOpProtocol {
+    func listen()
+    func write()
+    func read()
+}
+
+enum BLEScanningStatus {
+    case initial
+    case scanning
+    case scanTimeout
+    case powerOff
+    case userDeny
+}
+
+enum BLEDeviceStatus {
+    case paired
+    case unpaired
+}
+
 class BLEManager: NSObject {
 
     private let meshtasticDeviceServiceUUIDs = [CBUUID(string: "0x6BA1B218-15A8-461F-9FA8-5DCAE273EAFD")]
     private let toRadioUUID = CBUUID(string: "0xF75C76D2-129E-4DAD-A1DD-7866124401E7")
     private let fromRadioUUID = CBUUID(string: "0x8BA2BCC2-EE02-4A55-A531-C525C5E454D5")
     private let numUUID = CBUUID(string: "0xED9DA18C-A800-4F66-A670-AA7547E34453")
-    private let scanTimeOut = 5
 
     private lazy var manager: CBCentralManager = { CBCentralManager(delegate: self, queue: nil) }()
     private lazy var discoveredDevices: [CBPeripheral] = { [] }()
     private var linkedDevice: CBPeripheral?
 
+    let scanStatus: Observable<BLEScanningStatus> = { .init(value: .initial) }()
+    let deviceStatus: Observable<BLEDeviceStatus> = { .init(value: .unpaired) }()
+
     // We interested in Meshtastic devices only
-    func scanForDevice() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(scanTimeOut)) { [weak self] in
-            self?.stopScan()
+    func scanForDevice(timeout: Int = 5) {
+        scanStatus.value = .scanning
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(timeout)) {
+            self.stopScan()
         }
         manager.scanForPeripherals(withServices: meshtasticDeviceServiceUUIDs, options: nil)
     }
 
-    func rescanForDevice() {
+    private func rescanForDevice() {
         discoveredDevices.removeAll()
         manager.stopScan()
         scanForDevice()
     }
 
-    func stopScan() {
+    private func stopScan() {
         if manager.isScanning {
+            scanStatus.value = .scanTimeout
             manager.stopScan()
         }
     }
 
-    func connectToDevice(device: CBPeripheral) {
+    private func connectToDevice(device: CBPeripheral) {
         manager.connect(device, options: nil)
     }
 
-    func releaseDevice() {
+    private func releaseDevice() {
         if let device = linkedDevice {
             manager.cancelPeripheralConnection(device)
             linkedDevice = nil
+            deviceStatus.value = .unpaired
         } else {
             log("Noone device is connected")
         }
     }
 
-    func discoverForService() {
+    private func discoverForService() {
         linkedDevice?.discoverServices(self.meshtasticDeviceServiceUUIDs)
     }
 
-    func discoverForCharacteristic() {
+    private func discoverForCharacteristic() {
         if let services = linkedDevice?.services {
             services.forEach { [weak self] service in
                 self?.linkedDevice?.discoverCharacteristics(nil, for: service)
@@ -66,6 +97,51 @@ class BLEManager: NSObject {
             log("Failed to start discovering the characteristics, discover the service first")
         }
     }
+}
+
+// MARK: BLEManagerProtocol implementation
+
+extension BLEManager: BLEManagerProtocol {
+    func drop() {
+        self.releaseDevice()
+    }
+
+    func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void) {
+        deviceStatus.binding { [weak self] status in
+            switch status {
+            case .paired:
+                onComplite(self?.linkedDevice != nil)
+            default:
+                break
+            }
+        }
+        self.connectToDevice(device: device)
+    }
+
+    func scan(for timeout: Int = 5, onComplite: @escaping ([CBPeripheral]) -> Void) {
+        scanStatus.binding { [weak self] status in
+            switch status {
+            case .scanTimeout:
+                onComplite(self?.discoveredDevices ?? [])
+            default:
+                break
+            }
+        }
+        self.scanForDevice(timeout: timeout)
+     }
+
+    func rescan(onComplite: @escaping ([CBPeripheral]) -> Void) {
+        scanStatus.binding { [weak self] status in
+            switch status {
+            case .scanTimeout:
+                onComplite(self?.discoveredDevices ?? [])
+            default:
+                break
+            }
+        }
+        self.rescanForDevice()
+    }
+
 }
 
 // MARK: CBCentralManagerDelegate implementation
@@ -77,11 +153,9 @@ extension BLEManager: CBCentralManagerDelegate {
         case .poweredOn:
             scanForDevice()
         case.poweredOff:
-            // TODO: User has disabled Bluetooth
-            log("BT poweredOff")
+            scanStatus.value = .powerOff
         case .unauthorized:
-            // TODO: User has refused permission, disable app
-            log("BT unauthorized")
+            scanStatus.value = .userDeny
         case .resetting:
             log("BT resetting")
         case .unsupported:
@@ -101,6 +175,7 @@ extension BLEManager: CBCentralManagerDelegate {
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         linkedDevice = peripheral
+        discoverForService()
         log("Device \(peripheral.name ?? "Unknown") linked")
     }
 
@@ -110,6 +185,7 @@ extension BLEManager: CBCentralManagerDelegate {
             log("BLE device got err (\(err.localizedDescription)) while disconnecting")
         } else {
             log("Linked device has been released")
+            deviceStatus.value = .unpaired
         }
     }
 }
@@ -128,22 +204,10 @@ extension BLEManager: CBPeripheralDelegate {
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard let characteristics = service.characteristics else {
+        guard service.characteristics != nil else {
             log("No one characteristics have been discovered on \(service.uuid)")
             return
         }
-
-        characteristics.forEach { characteristic in
-            switch characteristic.uuid {
-            case toRadioUUID:
-                break
-            case fromRadioUUID:
-                break
-            case numUUID:
-                break
-            default:
-                break
-            }
-        }
+        deviceStatus.value = .paired
     }
 }

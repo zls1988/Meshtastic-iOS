@@ -12,6 +12,7 @@
 		0D4E46F725D3C3C5008686AB /* LogManagerTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */; };
 		0DEE520925D0BA71003C6EB7 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0DEE520825D0BA71003C6EB7 /* SwiftProtobuf */; };
 		0DEE520D25D0BE8B003C6EB7 /* DeviceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE520C25D0BE8B003C6EB7 /* DeviceDetailView.swift */; };
+		39C0BC0F26B8311800CA6A9C /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C0BC0E26B8311800CA6A9C /* Observable.swift */; };
 		6F429B5626B6E6F500E10C6E /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F429B5526B6E6F500E10C6E /* BLEManager.swift */; };
 		D5248FC6251ED2FA00CF50E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */; };
 		D5248FC9251ED2FA00CF50E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5248FC7251ED2FA00CF50E6 /* LaunchScreen.storyboard */; };
@@ -24,8 +25,6 @@
 		D55D9DD4253EACFA005085B4 /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D55D9DD3253EACFA005085B4 /* DeviceList.swift */; };
 		D5971DF925D0B22C002ED9FF /* MeshtasticApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */; };
 		D5971DFA25D0B22C002ED9FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5971DF825D0B22C002ED9FF /* ContentView.swift */; };
-		D5A89FEC253D20130012982E /* MeshtasticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A89FE9253D20130012982E /* MeshtasticManager.swift */; };
-		D5A89FED253D20130012982E /* MConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A89FEA253D20130012982E /* MConnector.swift */; };
 		D5A89FEE253D20130012982E /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A89FEB253D20130012982E /* LogManager.swift */; };
 		D5ACF13525CD2ABE005D74C2 /* mesh.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ACF13025CD2ABE005D74C2 /* mesh.pb.swift */; };
 		D5ACF13625CD2ABE005D74C2 /* portnums.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ACF13125CD2ABE005D74C2 /* portnums.pb.swift */; };
@@ -39,6 +38,7 @@
 		0D164ED725D1A3C700E9B91B /* MeshDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshDeviceView.swift; sourceTree = "<group>"; };
 		0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogManagerTemplate.swift; sourceTree = "<group>"; };
 		0DEE520C25D0BE8B003C6EB7 /* DeviceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailView.swift; sourceTree = "<group>"; };
+		39C0BC0E26B8311800CA6A9C /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		6F429B5526B6E6F500E10C6E /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		D5248FB9251ED2F900CF50E6 /* Meshtastic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meshtastic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -55,8 +55,6 @@
 		D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshtasticApp.swift; sourceTree = "<group>"; };
 		D5971DF825D0B22C002ED9FF /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5A89FCB253D1EF60012982E /* device-api.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "device-api.md"; sourceTree = "<group>"; };
-		D5A89FE9253D20130012982E /* MeshtasticManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshtasticManager.swift; sourceTree = "<group>"; };
-		D5A89FEA253D20130012982E /* MConnector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MConnector.swift; sourceTree = "<group>"; };
 		D5A89FEB253D20130012982E /* LogManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
 		D5ACF13025CD2ABE005D74C2 /* mesh.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mesh.pb.swift; sourceTree = "<group>"; };
 		D5ACF13125CD2ABE005D74C2 /* portnums.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = portnums.pb.swift; sourceTree = "<group>"; };
@@ -97,6 +95,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		39C0BC0D26B8310C00CA6A9C /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				39C0BC0E26B8311800CA6A9C /* Observable.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		D5248FB0251ED2F900CF50E6 = {
 			isa = PBXGroup;
 			children = (
@@ -116,6 +122,7 @@
 		D5248FBB251ED2F900CF50E6 /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
+				39C0BC0D26B8310C00CA6A9C /* Util */,
 				D5A89FCB253D1EF60012982E /* device-api.md */,
 				D5249004251ED4E700CF50E6 /* README.md */,
 				0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */,
@@ -155,9 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				D5ACF12F25CD2ABE005D74C2 /* Proto */,
-				D5A89FE9253D20130012982E /* MeshtasticManager.swift */,
 				D55D9DBD253EA885005085B4 /* AppView.swift */,
-				D5A89FEA253D20130012982E /* MConnector.swift */,
 				6F429B5526B6E6F500E10C6E /* BLEManager.swift */,
 			);
 			path = BLE;
@@ -278,9 +283,7 @@
 				D55AC0AE25D0A63A00151E9D /* DeviceView.swift in Sources */,
 				0DEE520D25D0BE8B003C6EB7 /* DeviceDetailView.swift in Sources */,
 				D55D9DBE253EA885005085B4 /* AppView.swift in Sources */,
-				D5A89FED253D20130012982E /* MConnector.swift in Sources */,
 				0D164ED425D1A35600E9B91B /* MeshDevice.swift in Sources */,
-				D5A89FEC253D20130012982E /* MeshtasticManager.swift in Sources */,
 				D5ACF13725CD2ABE005D74C2 /* remote_hardware.pb.swift in Sources */,
 				D55AC0AB25D0A52700151E9D /* DeviceInfo.swift in Sources */,
 				D5ACF13625CD2ABE005D74C2 /* portnums.pb.swift in Sources */,
@@ -293,6 +296,7 @@
 				D55D9DCC253EA95C005085B4 /* SettingsView.swift in Sources */,
 				D5A89FEE253D20130012982E /* LogManager.swift in Sources */,
 				D5ACF13825CD2ABE005D74C2 /* apponly.pb.swift in Sources */,
+				39C0BC0F26B8311800CA6A9C /* Observable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

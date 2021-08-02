@@ -14,7 +14,6 @@ import CoreBluetooth
  */
 
 struct SettingsView: View {
-    var manager: MeshtasticManager!
     @State private var peripheral: CBPeripheral?
 
     @Binding var meshDevices: [MeshDevice]
@@ -27,8 +26,6 @@ struct SettingsView: View {
     init(meshDevices: Binding<[MeshDevice]>, devices: Binding<[DeviceInfo]>) {
         self._meshDevices = meshDevices
         self._devices = devices
-        manager = MeshtasticManager()
-        manager.delegate = self
     }
 
     var body: some View {
@@ -91,7 +88,6 @@ struct SettingsView: View {
         guard let peripheral = device.peripheral else {
             return
         }
-        manager.disconnect(peripheral: peripheral)
     }
 
     private func connectDevice(device: DeviceInfo) {
@@ -99,46 +95,12 @@ struct SettingsView: View {
             return
         }
         self.peripheral = peripheral
-        manager.connect(peripheral: peripheral)
     }
 
     private func readFromDevice(device: DeviceInfo) {
         guard let peripheral = device.peripheral else {
             return
         }
-        manager.startConfig(peripheral: peripheral)
-    }
-
-}
-
-extension SettingsView: MeshtasticManagerUpdating {
-
-    func didReceiveConfig() {
-        log("")
-    }
-
-    func didDiscoverDevice(name: String?, peripheral: CBPeripheral, RSSI: NSNumber) {
-        log("😺 😺 😺 \(RSSI): \(String(describing: name));\n\(String(describing: peripheral.name))")
-        let device = DeviceInfo(id: peripheral.identifier.uuidString, name: peripheral.name ?? "N/A", lastTime: Date(), location: nil)
-        device.peripheral = peripheral
-        device.rssi = RSSI.doubleValue
-        devices.append(device)
-    }
-
-    func didConnect(to peripheral: CBPeripheral) {
-        reloadView = UUID().uuidString
-        log("\(peripheral)")
-
-        let newDev = devices
-        devices = newDev
-    }
-
-    func didDisconnect(to peripheral: CBPeripheral) {
-        reloadView = UUID().uuidString
-        log("\(peripheral)")
-
-        let newDev = devices
-        devices = newDev
     }
 
 }
