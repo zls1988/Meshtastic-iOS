@@ -15,10 +15,10 @@ protocol BLEManagerProtocol: AnyObject {
     func drop()
 }
 
-protocol MeshtasticBLEOpProtocol {
-    func listen()
-    func write()
-    func read()
+protocol BLEOpProtocol {
+    func listen(enable: Bool, onComplite: @escaping (Result<Bool, Error>) -> Void)
+    func write(data: Data, onComplite: @escaping (Result<Bool, Error>) -> Void)
+    func read(onComplite: @escaping (Result<Data, Error>) -> Void)
 }
 
 enum BLEScanningStatus {
@@ -34,6 +34,18 @@ enum BLEDeviceStatus {
     case unpaired
 }
 
+enum BLEOpStatus {
+    case unknown
+    case processing
+    case done
+}
+
+enum BLEOpError: Error {
+    case emptyReadValue
+    case writeError
+    case subscribeError
+}
+
 class BLEManager: NSObject {
 
     private let meshtasticDeviceServiceUUIDs = [CBUUID(string: "0x6BA1B218-15A8-461F-9FA8-5DCAE273EAFD")]
@@ -41,12 +53,22 @@ class BLEManager: NSObject {
     private let fromRadioUUID = CBUUID(string: "0x8BA2BCC2-EE02-4A55-A531-C525C5E454D5")
     private let numUUID = CBUUID(string: "0xED9DA18C-A800-4F66-A670-AA7547E34453")
 
+    private var toRadioCharacteristic: CBCharacteristic?
+    private var fromRadioCharacteristic: CBCharacteristic?
+    private var numCharacteristic: CBCharacteristic?
+
     private lazy var manager: CBCentralManager = { CBCentralManager(delegate: self, queue: nil) }()
     private lazy var discoveredDevices: [CBPeripheral] = { [] }()
     private var linkedDevice: CBPeripheral?
+    private var inputData: Result<Data, Error>?
+    private var isWriteOpSuccessed: Result<Bool, Error>?
+    private var isListenOpSuccessed: Result<Bool, Error>?
 
     let scanStatus: Observable<BLEScanningStatus> = { .init(value: .initial) }()
     let deviceStatus: Observable<BLEDeviceStatus> = { .init(value: .unpaired) }()
+    let readStatus: Observable<BLEOpStatus> = { .init(value: .unknown) }()
+    let writeStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
+    let listenStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
 
     // We interested in Meshtastic devices only
     func scanForDevice(timeout: Int = 5) {
@@ -107,10 +129,10 @@ extension BLEManager: BLEManagerProtocol {
     }
 
     func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void) {
-        deviceStatus.binding { [weak self] status in
+        deviceStatus.binding { [weak linkedDevice] status in
             switch status {
             case .paired:
-                onComplite(self?.linkedDevice != nil)
+                onComplite(linkedDevice != nil)
             default:
                 break
             }
@@ -128,7 +150,7 @@ extension BLEManager: BLEManagerProtocol {
             }
         }
         self.scanForDevice(timeout: timeout)
-     }
+    }
 
     func rescan(onComplite: @escaping ([CBPeripheral]) -> Void) {
         scanStatus.binding { [weak self] status in
@@ -204,10 +226,102 @@ extension BLEManager: CBPeripheralDelegate {
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard service.characteristics != nil else {
+        guard let characteristics = service.characteristics else {
             log("No one characteristics have been discovered on \(service.uuid)")
             return
         }
+        for characteristic in characteristics {
+            switch characteristic.uuid {
+            case toRadioUUID:
+                toRadioCharacteristic = characteristic
+            case fromRadioUUID:
+                fromRadioCharacteristic = characteristic
+            case numUUID:
+                numCharacteristic = characteristic
+            default:
+                break
+            }
+        }
         deviceStatus.value = .paired
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            inputData = .failure(error)
+            return
+        }
+        guard let value = characteristic.value else {
+            inputData = .failure(BLEOpError.emptyReadValue)
+            return
+        }
+        switch characteristic.uuid {
+        case fromRadioUUID:
+            inputData = .success(value)
+            readStatus.value = .done
+        default:
+            break
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            isListenOpSuccessed = .failure(error)
+            return
+        }
+        isListenOpSuccessed = .success(true)
+        listenStatus.value = .done
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            isWriteOpSuccessed = .failure(error)
+            return
+        }
+        isWriteOpSuccessed = .success(true)
+        writeStatus.value = .done
+    }
+}
+
+// MARK: BLEOpProtocol implementation
+
+extension BLEManager: BLEOpProtocol {
+
+    func listen(enable: Bool, onComplite: @escaping (Result<Bool, Error>) -> Void) {
+        if let char = numCharacteristic {
+            self.listenStatus.value = .processing
+            self.listenStatus.binding { [weak self] state in
+                if state == .done {
+                    onComplite(self?.isListenOpSuccessed ?? .failure(BLEOpError.subscribeError))
+                }
+            }
+            self.linkedDevice?.setNotifyValue(enable, for: char)
+        }
+    }
+
+    func write(data: Data, onComplite: @escaping (Result<Bool, Error>) -> Void) {
+        if self.writeStatus.value == .processing { return }
+        if let char = toRadioCharacteristic {
+            self.writeStatus.value = .processing
+            self.writeStatus.binding { [weak self] state in
+                if state == .done {
+                    onComplite(self?.isWriteOpSuccessed ?? .failure(BLEOpError.writeError))
+                }
+            }
+            self.linkedDevice?.writeValue(data, for: char, type: .withResponse)
+
+        }
+    }
+
+    func read(onComplite: @escaping (Result<Data, Error>) -> Void) {
+        if self.readStatus.value == .processing { return }
+        if let char = fromRadioCharacteristic {
+            self.readStatus.value = .processing
+            self.readStatus.binding { [weak self] state in
+                if state == .done {
+                    onComplite(self?.inputData ?? .failure(BLEOpError.emptyReadValue))
+                }
+            }
+            self.linkedDevice?.readValue(for: char)
+        }
     }
 }
