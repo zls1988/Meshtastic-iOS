@@ -95,6 +95,20 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		39752BAE26BACE40002F4E1A /* Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		39752BAF26BACE4C002F4E1A /* Meshtastic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Meshtastic;
+			sourceTree = "<group>";
+		};
 		39C0BC0D26B8310C00CA6A9C /* Util */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +136,7 @@
 		D5248FBB251ED2F900CF50E6 /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
+				D55D9DBD253EA885005085B4 /* AppView.swift */,
 				39C0BC0D26B8310C00CA6A9C /* Util */,
 				D5A89FCB253D1EF60012982E /* device-api.md */,
 				D5249004251ED4E700CF50E6 /* README.md */,
@@ -161,8 +176,9 @@
 		D5A89FE8253D20130012982E /* BLE */ = {
 			isa = PBXGroup;
 			children = (
+				39752BAF26BACE4C002F4E1A /* Meshtastic */,
+				39752BAE26BACE40002F4E1A /* Data */,
 				D5ACF12F25CD2ABE005D74C2 /* Proto */,
-				D55D9DBD253EA885005085B4 /* AppView.swift */,
 				6F429B5526B6E6F500E10C6E /* BLEManager.swift */,
 			);
 			path = BLE;

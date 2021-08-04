@@ -18,7 +18,17 @@ struct AppView: View {
     }
 
     var body: some View {
-        TabView {
+        let bleManager = BLEManager.instance
+        bleManager.read { result in
+            log(result)
+        }
+        bleManager.write(data: Data()) { result in
+            log(result)
+        }
+        bleManager.listen(enable: true) { result in
+            log(result)
+        }
+        return TabView {
             ChatView()
                 .tabItem {
                     Image(systemName: "message.circle")

@@ -40,13 +40,16 @@ enum BLEOpStatus {
     case done
 }
 
-enum BLEOpError: Error {
+enum BLEError: Error {
+    case deviceNotPaired
     case emptyReadValue
     case writeError
     case subscribeError
 }
 
 class BLEManager: NSObject {
+
+    static let instance = BLEManager()
 
     private let meshtasticDeviceServiceUUIDs = [CBUUID(string: "0x6BA1B218-15A8-461F-9FA8-5DCAE273EAFD")]
     private let toRadioUUID = CBUUID(string: "0xF75C76D2-129E-4DAD-A1DD-7866124401E7")
@@ -64,11 +67,14 @@ class BLEManager: NSObject {
     private var isWriteOpSuccessed: Result<Bool, Error>?
     private var isListenOpSuccessed: Result<Bool, Error>?
 
-    let scanStatus: Observable<BLEScanningStatus> = { .init(value: .initial) }()
-    let deviceStatus: Observable<BLEDeviceStatus> = { .init(value: .unpaired) }()
-    let readStatus: Observable<BLEOpStatus> = { .init(value: .unknown) }()
-    let writeStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
-    let listenStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
+    private let scanStatus: Observable<BLEScanningStatus> = { .init(value: .initial) }()
+    private let deviceStatus: Observable<BLEDeviceStatus> = { .init(value: .unpaired) }()
+    private let readStatus: Observable<BLEOpStatus> = { .init(value: .unknown) }()
+    private let writeStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
+    private let listenStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
+
+    private override init() {
+    }
 
     // We interested in Meshtastic devices only
     func scanForDevice(timeout: Int = 5) {
@@ -251,7 +257,7 @@ extension BLEManager: CBPeripheralDelegate {
             return
         }
         guard let value = characteristic.value else {
-            inputData = .failure(BLEOpError.emptyReadValue)
+            inputData = .failure(BLEError.emptyReadValue)
             return
         }
         switch characteristic.uuid {
@@ -291,10 +297,12 @@ extension BLEManager: BLEOpProtocol {
             self.listenStatus.value = .processing
             self.listenStatus.binding { [weak self] state in
                 if state == .done {
-                    onComplite(self?.isListenOpSuccessed ?? .failure(BLEOpError.subscribeError))
+                    onComplite(self?.isListenOpSuccessed ?? .failure(BLEError.subscribeError))
                 }
             }
             self.linkedDevice?.setNotifyValue(enable, for: char)
+        } else {
+            onComplite(.failure(BLEError.deviceNotPaired))
         }
     }
 
@@ -304,11 +312,12 @@ extension BLEManager: BLEOpProtocol {
             self.writeStatus.value = .processing
             self.writeStatus.binding { [weak self] state in
                 if state == .done {
-                    onComplite(self?.isWriteOpSuccessed ?? .failure(BLEOpError.writeError))
+                    onComplite(self?.isWriteOpSuccessed ?? .failure(BLEError.writeError))
                 }
             }
             self.linkedDevice?.writeValue(data, for: char, type: .withResponse)
-
+        } else {
+            onComplite(.failure(BLEError.deviceNotPaired))
         }
     }
 
@@ -318,10 +327,12 @@ extension BLEManager: BLEOpProtocol {
             self.readStatus.value = .processing
             self.readStatus.binding { [weak self] state in
                 if state == .done {
-                    onComplite(self?.inputData ?? .failure(BLEOpError.emptyReadValue))
+                    onComplite(self?.inputData ?? .failure(BLEError.emptyReadValue))
                 }
             }
             self.linkedDevice?.readValue(for: char)
+        } else {
+            onComplite(.failure(BLEError.deviceNotPaired))
         }
     }
 }
