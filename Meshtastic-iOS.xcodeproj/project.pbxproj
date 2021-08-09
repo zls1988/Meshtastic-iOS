@@ -12,6 +12,9 @@
 		0D4E46F725D3C3C5008686AB /* LogManagerTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */; };
 		0DEE520925D0BA71003C6EB7 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0DEE520825D0BA71003C6EB7 /* SwiftProtobuf */; };
 		0DEE520D25D0BE8B003C6EB7 /* DeviceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEE520C25D0BE8B003C6EB7 /* DeviceDetailView.swift */; };
+		3901C17626C0BD0F0005AC9D /* WizardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3901C17526C0BD0F0005AC9D /* WizardViewModel.swift */; };
+		3912699D26BC804D00E3E03E /* RadioInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3912699C26BC804D00E3E03E /* RadioInterface.swift */; };
+		39752BB726BB11E5002F4E1A /* WizardSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39752BB626BB11E5002F4E1A /* WizardSwiftUIView.swift */; };
 		39C0BC0F26B8311800CA6A9C /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C0BC0E26B8311800CA6A9C /* Observable.swift */; };
 		6F429B5626B6E6F500E10C6E /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F429B5526B6E6F500E10C6E /* BLEManager.swift */; };
 		D5248FC6251ED2FA00CF50E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */; };
@@ -38,13 +41,16 @@
 		0D164ED725D1A3C700E9B91B /* MeshDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshDeviceView.swift; sourceTree = "<group>"; };
 		0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogManagerTemplate.swift; sourceTree = "<group>"; };
 		0DEE520C25D0BE8B003C6EB7 /* DeviceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailView.swift; sourceTree = "<group>"; };
+		3901C17526C0BD0F0005AC9D /* WizardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardViewModel.swift; sourceTree = "<group>"; };
+		3912699C26BC804D00E3E03E /* RadioInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioInterface.swift; sourceTree = "<group>"; };
+		39752BB626BB11E5002F4E1A /* WizardSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardSwiftUIView.swift; sourceTree = "<group>"; };
 		39C0BC0E26B8311800CA6A9C /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		6F429B5526B6E6F500E10C6E /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		D5248FB9251ED2F900CF50E6 /* Meshtastic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meshtastic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D5248FC8251ED2FA00CF50E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D5248FCA251ED2FA00CF50E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D5249004251ED4E700CF50E6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D5249004251ED4E700CF50E6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		D55AC0AA25D0A52700151E9D /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		D55AC0AD25D0A63A00151E9D /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
 		D55D9DBD253EA885005085B4 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -95,23 +101,35 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		39752BAE26BACE40002F4E1A /* Data */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Data;
-			sourceTree = "<group>";
-		};
 		39752BAF26BACE4C002F4E1A /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
+				3912699C26BC804D00E3E03E /* RadioInterface.swift */,
 			);
 			path = Meshtastic;
+			sourceTree = "<group>";
+		};
+		39752BB226BB119F002F4E1A /* View */ = {
+			isa = PBXGroup;
+			children = (
+				39752BB626BB11E5002F4E1A /* WizardSwiftUIView.swift */,
+				3901C17526C0BD0F0005AC9D /* WizardViewModel.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		39752BB826BB11F9002F4E1A /* Core */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Core;
 			sourceTree = "<group>";
 		};
 		39C0BC0D26B8310C00CA6A9C /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */,
+				D5A89FEB253D20130012982E /* LogManager.swift */,
 				39C0BC0E26B8311800CA6A9C /* Observable.swift */,
 			);
 			path = Util;
@@ -136,14 +154,13 @@
 		D5248FBB251ED2F900CF50E6 /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
+				39752BB826BB11F9002F4E1A /* Core */,
 				D55D9DBD253EA885005085B4 /* AppView.swift */,
 				39C0BC0D26B8310C00CA6A9C /* Util */,
 				D5A89FCB253D1EF60012982E /* device-api.md */,
 				D5249004251ED4E700CF50E6 /* README.md */,
-				0D4E46F625D3C3C5008686AB /* LogManagerTemplate.swift */,
 				D5971DF825D0B22C002ED9FF /* ContentView.swift */,
 				D5971DF725D0B22C002ED9FF /* MeshtasticApp.swift */,
-				D5A89FEB253D20130012982E /* LogManager.swift */,
 				0DEE521725D0EAC6003C6EB7 /* Models */,
 				D5A89FE8253D20130012982E /* BLE */,
 				D55D9DCE253EA96B005085B4 /* Views */,
@@ -176,8 +193,8 @@
 		D5A89FE8253D20130012982E /* BLE */ = {
 			isa = PBXGroup;
 			children = (
+				39752BB226BB119F002F4E1A /* View */,
 				39752BAF26BACE4C002F4E1A /* Meshtastic */,
-				39752BAE26BACE40002F4E1A /* Data */,
 				D5ACF12F25CD2ABE005D74C2 /* Proto */,
 				6F429B5526B6E6F500E10C6E /* BLEManager.swift */,
 			);
@@ -311,7 +328,10 @@
 				D5971DFA25D0B22C002ED9FF /* ContentView.swift in Sources */,
 				D55D9DCC253EA95C005085B4 /* SettingsView.swift in Sources */,
 				D5A89FEE253D20130012982E /* LogManager.swift in Sources */,
+				39752BB726BB11E5002F4E1A /* WizardSwiftUIView.swift in Sources */,
 				D5ACF13825CD2ABE005D74C2 /* apponly.pb.swift in Sources */,
+				3901C17626C0BD0F0005AC9D /* WizardViewModel.swift in Sources */,
+				3912699D26BC804D00E3E03E /* RadioInterface.swift in Sources */,
 				39C0BC0F26B8311800CA6A9C /* Observable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

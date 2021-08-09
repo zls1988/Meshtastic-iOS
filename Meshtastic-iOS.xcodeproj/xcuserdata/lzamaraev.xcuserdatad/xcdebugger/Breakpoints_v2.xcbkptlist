@@ -7,49 +7,113 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "20D374A4-9360-4E91-9D43-FBBB3A629DFD"
-            shouldBeEnabled = "Yes"
+            uuid = "F2DFEAD9-5422-4643-AAC0-F1FFF6A9B32E"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Meshtastic/BLE/BLEManager.swift"
+            filePath = "Meshtastic/BLE/View/WizardSwiftUIView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "282"
-            endingLineNumber = "282"
-            landmarkName = "peripheral(_:didWriteValueFor:error:)"
-            landmarkType = "7">
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "F2DFEAD9-5422-4643-AAC0-F1FFF6A9B32E - 75c7f35f30850824"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Meshtastic.WizardSwiftUIView.body.getter : some"
+                  moduleName = "Meshtastic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lzamaraev/Desktop/Develop/ios/Meshtastic-iOS/Meshtastic/BLE/View/WizardSwiftUIView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "1080">
+               </Location>
+               <Location
+                  uuid = "F2DFEAD9-5422-4643-AAC0-F1FFF6A9B32E - 1025b05dfab0fbd7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 () -&gt; SwiftUI.Text in Meshtastic.WizardSwiftUIView.body.getter : some"
+                  moduleName = "Meshtastic"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lzamaraev/Desktop/Develop/ios/Meshtastic-iOS/Meshtastic/BLE/View/WizardSwiftUIView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "11">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E2E0FB91-F836-4346-8C45-090E854529BC"
-            shouldBeEnabled = "Yes"
+            uuid = "FF3BA3A9-DE3C-4476-87B7-D05AA6F4C43E"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Meshtastic/BLE/BLEManager.swift"
+            filePath = "Meshtastic/BLE/View/WizardSwiftUIView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "273"
-            endingLineNumber = "273"
-            landmarkName = "peripheral(_:didUpdateNotificationStateFor:error:)"
-            landmarkType = "7">
+            startingLineNumber = "15"
+            endingLineNumber = "15"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D733ED3C-BEB2-44AF-8173-6BFDF6B0E86B"
-            shouldBeEnabled = "Yes"
+            uuid = "740E91BC-758F-4EA9-81F2-7699C249FBF1"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Meshtastic/BLE/BLEManager.swift"
+            filePath = "Meshtastic/BLE/View/WizardSwiftUIView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "peripheral(_:didUpdateValueFor:error:)"
-            landmarkType = "7">
+            startingLineNumber = "67"
+            endingLineNumber = "67"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "78D96EC2-FD6A-4D37-820E-A366B80A71E9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Meshtastic/BLE/View/WizardSwiftUIView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CCB94E6F-8A37-4397-8957-7F6DF8D4C027"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Meshtastic/BLE/View/WizardSwiftUIView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

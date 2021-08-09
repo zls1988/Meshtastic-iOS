@@ -41,6 +41,8 @@ enum BLEOpStatus {
 }
 
 enum BLEError: Error {
+    case readingNow
+    case writingNow
     case deviceNotPaired
     case emptyReadValue
     case writeError
@@ -49,7 +51,7 @@ enum BLEError: Error {
 
 class BLEManager: NSObject {
 
-    static let instance = BLEManager()
+    static let shared = BLEManager()
 
     private let meshtasticDeviceServiceUUIDs = [CBUUID(string: "0x6BA1B218-15A8-461F-9FA8-5DCAE273EAFD")]
     private let toRadioUUID = CBUUID(string: "0xF75C76D2-129E-4DAD-A1DD-7866124401E7")
@@ -138,6 +140,7 @@ extension BLEManager: BLEManagerProtocol {
         deviceStatus.binding { [weak linkedDevice] status in
             switch status {
             case .paired:
+                linkedDevice?.delegate = self
                 onComplite(linkedDevice != nil)
             default:
                 break
@@ -307,7 +310,7 @@ extension BLEManager: BLEOpProtocol {
     }
 
     func write(data: Data, onComplite: @escaping (Result<Bool, Error>) -> Void) {
-        if self.writeStatus.value == .processing { return }
+        if self.writeStatus.value == .processing { onComplite(.failure(BLEError.writingNow)) }
         if let char = toRadioCharacteristic {
             self.writeStatus.value = .processing
             self.writeStatus.binding { [weak self] state in
@@ -322,7 +325,7 @@ extension BLEManager: BLEOpProtocol {
     }
 
     func read(onComplite: @escaping (Result<Data, Error>) -> Void) {
-        if self.readStatus.value == .processing { return }
+        if self.readStatus.value == .processing { onComplite(.failure(BLEError.readingNow)) }
         if let char = fromRadioCharacteristic {
             self.readStatus.value = .processing
             self.readStatus.binding { [weak self] state in
