@@ -6,10 +6,20 @@
 //
 
 import Foundation
+import CoreBluetooth
 
 class WizardViewModel: BaseViewModel {
 
     let bleManager: BLEManagerProtocol = BLEManager.shared
+    @Published var devices: [CBPeripheral] = []
+    
+    func scanForDevices() {
+        loading = true
+        bleManager.scan(for: 5) { founded in
+            self.devices = founded
+            self.loading = false
+        }
+    }
 }
 
 class BaseViewModel: ObservableObject {

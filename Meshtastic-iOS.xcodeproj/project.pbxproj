@@ -118,13 +118,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		39752BB826BB11F9002F4E1A /* Core */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
 		39C0BC0D26B8310C00CA6A9C /* Util */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,7 +147,6 @@
 		D5248FBB251ED2F900CF50E6 /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
-				39752BB826BB11F9002F4E1A /* Core */,
 				D55D9DBD253EA885005085B4 /* AppView.swift */,
 				39C0BC0D26B8310C00CA6A9C /* Util */,
 				D5A89FCB253D1EF60012982E /* device-api.md */,

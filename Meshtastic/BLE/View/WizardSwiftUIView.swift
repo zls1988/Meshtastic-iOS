@@ -12,14 +12,15 @@ struct WizardSwiftUIView: View {
 
     var body: some View {
         BaseView(isLoading: $vm.loading, isError: $vm.error) {
-            Text("Devices").onTapGesture(perform: {
-                debugLog("tapped")
-                vm.loading = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
-                    vm.error = true
-                    vm.loading = false
+            ZStack {
+                if vm.devices.isEmpty {
+                    Text("TEST")
+                } else {
+                    Text("Run device scanning...").onTapGesture(perform: {
+                            vm.scanForDevices()
+                    })
                 }
-            })
+            }
         }
     }
 }
