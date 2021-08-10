@@ -11,7 +11,6 @@ protocol MeshtasticProtocol {
     func sendMessage(message: String, to user: String?)
     func setOwner(owner user: User)
     func setChannelSetting(settings channel: ChannelSettings)
-
 }
 
 class RadioInterface {
@@ -46,7 +45,7 @@ class RadioInterface {
 
     private func read(onComplite: @escaping (Result<Data, Error>) -> Void) {
         writingQueue.async {
-            self.bleOperator.read() { result in
+            self.bleOperator.read { result in
                 switch result {
                 case .success(let data):
                     onComplite(.success(data))

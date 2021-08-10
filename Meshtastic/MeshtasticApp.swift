@@ -11,7 +11,7 @@ import SwiftUI
 struct MeshtasticApp: App {
     var body: some Scene {
         WindowGroup {
-            WizardSwiftUIView()
+            WizardView()
         }
     }
 }

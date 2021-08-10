@@ -29,9 +29,10 @@ enum BLEScanningStatus {
     case userDeny
 }
 
-enum BLEDeviceStatus {
+enum BLEDeviceLinkStatus {
     case paired
     case unpaired
+    case unknown
 }
 
 enum BLEOpStatus {
@@ -70,7 +71,7 @@ class BLEManager: NSObject {
     private var isListenOpSuccessed: Result<Bool, Error>?
 
     private let scanStatus: Observable<BLEScanningStatus> = { .init(value: .initial) }()
-    private let deviceStatus: Observable<BLEDeviceStatus> = { .init(value: .unpaired) }()
+    private let deviseLinkStatus: Observable<BLEDeviceLinkStatus> = { .init(value: .unknown) }()
     private let readStatus: Observable<BLEOpStatus> = { .init(value: .unknown) }()
     private let writeStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
     private let listenStatus: Observable<BLEOpStatus?> = { .init(value: .unknown) }()
@@ -108,7 +109,7 @@ class BLEManager: NSObject {
         if let device = linkedDevice {
             manager.cancelPeripheralConnection(device)
             linkedDevice = nil
-            deviceStatus.value = .unpaired
+            deviseLinkStatus.value = .unpaired
         } else {
             log("Noone device is connected")
         }
@@ -137,13 +138,12 @@ extension BLEManager: BLEManagerProtocol {
     }
 
     func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void) {
-        deviceStatus.binding { [weak linkedDevice] status in
+        deviseLinkStatus.binding { [weak linkedDevice] status in
             switch status {
             case .paired:
-                linkedDevice?.delegate = self
                 onComplite(linkedDevice != nil)
             default:
-                break
+                onComplite(false)
             }
         }
         self.connectToDevice(device: device)
@@ -167,7 +167,7 @@ extension BLEManager: BLEManagerProtocol {
             case .scanTimeout:
                 onComplite(self?.discoveredDevices ?? [])
             default:
-                break
+                fatalError("rescan is failed")
             }
         }
         self.rescanForDevice()
@@ -206,6 +206,7 @@ extension BLEManager: CBCentralManagerDelegate {
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         linkedDevice = peripheral
+        linkedDevice?.delegate = self
         discoverForService()
         log("Device \(peripheral.name ?? "Unknown") linked")
     }
@@ -216,7 +217,7 @@ extension BLEManager: CBCentralManagerDelegate {
             log("BLE device got err (\(err.localizedDescription)) while disconnecting")
         } else {
             log("Linked device has been released")
-            deviceStatus.value = .unpaired
+            deviseLinkStatus.value = .unpaired
         }
     }
 }
@@ -228,15 +229,21 @@ extension BLEManager: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let err = error {
             log("Service discovering failed with error = \(err.localizedDescription)")
+            deviseLinkStatus.value = .unpaired
         } else {
             // We know that services have been discovered at this point
-            discoverForCharacteristic()
+            if peripheral.services?.count == 0 {
+                deviseLinkStatus.value = .unpaired
+            } else {
+                discoverForCharacteristic()
+            }
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard let characteristics = service.characteristics else {
             log("No one characteristics have been discovered on \(service.uuid)")
+            deviseLinkStatus.value = .unpaired
             return
         }
         for characteristic in characteristics {
@@ -251,7 +258,7 @@ extension BLEManager: CBPeripheralDelegate {
                 break
             }
         }
-        deviceStatus.value = .paired
+        deviseLinkStatus.value = .paired
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {

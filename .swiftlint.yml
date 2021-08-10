@@ -1,7 +1,7 @@
 included:
   - Meshtastic/
 excluded:
-  - Meshtastic/BLE/Proto
+  - Meshtastic/BluetoothManager/Proto
 line_length:
   warning: 240
   ignores_function_declarations: true
