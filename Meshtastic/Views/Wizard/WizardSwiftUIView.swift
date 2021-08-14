@@ -29,14 +29,10 @@ struct WizardContent: View {
                     vm.scanForDevices()
                 }
             } else {
-                DeviceListView(devices: vm.devices.enumerated().map({ (index, device) in
-                    DeviceData(id: index, uuid: "\(device.identifier)", description: "\(device.name ?? "UNKNOWN")", pheripheral: device)
+                DeviceListView(devices: vm.devices.enumerated().map({ (_, device) in
+                    DeviceElement(uuid: "\(device.identifier)", description: "\(device.name ?? "UNKNOWN")")
                 })) { device in
-                    if let pheripheral = device.pheripheral {
-                        vm.connect(to: pheripheral)
-                    } else {
-                        fatalError("Pheripheral is nil")
-                    }
+                    vm.connect(device: device.uuid)
                 } rescanClick: {
                     vm.rescan()
                 }
@@ -52,32 +48,8 @@ struct WizardProgress: View {
     }
 }
 
-struct WizardSwiftUIView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            DeviceElementView(device: DeviceData(id: 0, uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test", pheripheral: nil))
-                .previewLayout(.fixed(width: 300, height: 100))
-            PromtToScanDevicesView {
-                log("Scanner runned...")
-            }.previewLayout(.fixed(width: 300, height: 100))
-            DeviceListView(devices: [
-                DeviceData(id: 1, uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test", pheripheral: nil),
-                DeviceData(id: 2, uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test", pheripheral: nil),
-                DeviceData(id: 3, uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test", pheripheral: nil),
-                DeviceData(id: 4, uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test", pheripheral: nil)
-            ]) { device in
-                log("\(device.id)")
-            } rescanClick: {
-                log("Rescan clicked")
-            }
-                .previewLayout(.fixed(width: 300, height: 400))
-            WizardView()
-        }
-    }
-}
-
 struct DeviceElementView: View {
-    let device: DeviceData
+    let device: DeviceElement
 
     var body: some View {
         HStack {
@@ -92,15 +64,15 @@ struct DeviceElementView: View {
 }
 
 struct DeviceListView: View {
-    let devices: [DeviceData]
-    let onClick: (DeviceData) -> Void
+    let devices: [DeviceElement]
+    let onClick: (DeviceElement) -> Void
     let rescanClick: () -> Void
 
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Devices list")) {
-                    ForEach(devices, id: \.self) { item in
+                    ForEach(devices, id: \.self.uuid) { item in
                         DeviceElementView(device: item).onTapGesture(perform: {
                             onClick(item)
                         })
@@ -139,9 +111,26 @@ struct PromtToScanDevicesView: View {
     }
 }
 
-struct DeviceData: Identifiable, Hashable {
-    var id: Int
-    let uuid: String
-    let description: String
-    let pheripheral: CBPeripheral?
+struct WizardSwiftUIView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            DeviceElementView(device: DeviceElement(uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test"))
+                .previewLayout(.fixed(width: 300, height: 100))
+            PromtToScanDevicesView {
+                log("Scanner runned...")
+            }.previewLayout(.fixed(width: 300, height: 100))
+            DeviceListView(devices: [
+                DeviceElement(uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A1", description: "Description test"),
+                DeviceElement(uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A2", description: "Description test"),
+                DeviceElement(uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A3", description: "Description test"),
+                DeviceElement(uuid: "EB4F724D-DA05-7A86-F21F-7BA6FD64A7A4", description: "Description test")
+            ]) { device in
+                log("\(device.id)")
+            } rescanClick: {
+                log("Rescan clicked")
+            }
+                .previewLayout(.fixed(width: 300, height: 400))
+            WizardView()
+        }
+    }
 }

@@ -11,7 +11,7 @@ import CoreBluetooth
 protocol BLEManagerProtocol: AnyObject {
     func scan(for timeout: Int, onComplite: @escaping ([CBPeripheral]) -> Void)
     func rescan(onComplite: @escaping ([CBPeripheral]) -> Void)
-    func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void)
+    func connect(device uuid: String, onComplite: @escaping (Bool) -> Void)
     func drop()
 }
 
@@ -137,7 +137,7 @@ extension BLEManager: BLEManagerProtocol {
         self.releaseDevice()
     }
 
-    func connect(device: CBPeripheral, onComplite: @escaping (Bool) -> Void) {
+    func connect(device uuid: String, onComplite: @escaping (Bool) -> Void) {
         deviseLinkStatus.binding { [weak linkedDevice] status in
             switch status {
             case .paired:
@@ -146,7 +146,13 @@ extension BLEManager: BLEManagerProtocol {
                 onComplite(false)
             }
         }
-        self.connectToDevice(device: device)
+        if let dev = self.discoveredDevices.first(where: { device in
+            device.identifier.uuidString == uuid
+        }) {
+            self.connectToDevice(device: dev)
+        } else {
+            fatalError("Device with UUID \(uuid) hasn't founded")
+        }
     }
 
     func scan(for timeout: Int = 5, onComplite: @escaping ([CBPeripheral]) -> Void) {

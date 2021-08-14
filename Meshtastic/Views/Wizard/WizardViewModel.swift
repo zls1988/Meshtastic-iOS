@@ -28,14 +28,14 @@ class WizardViewModel: BaseViewModel {
         }
     }
 
-    func connect(to device: CBPeripheral) {
+    func connect(device uuid: String) {
         loading = true
-        bleManager.connect(device: device) { result in
+        bleManager.connect(device: uuid) { result in
             self.loading = false
             if result {
-                log("Connected to \(device.identifier)")
+                log("Connected to \(uuid)")
             } else {
-                self.failure = "Connection to \(device.identifier) failed, try again."
+                self.failure = "Connection to \(uuid) failed, try again."
                 self.error = true
             }
         }
