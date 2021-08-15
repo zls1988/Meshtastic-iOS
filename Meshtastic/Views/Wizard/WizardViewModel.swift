@@ -12,6 +12,7 @@ class WizardViewModel: BaseViewModel {
 
     let bleManager: BLEManagerProtocol = BLEManager.shared
     @Published var devices: [CBPeripheral] = []
+
     func scanForDevices() {
         loading = true
         bleManager.scan(for: 5) { founded in
@@ -40,11 +41,4 @@ class WizardViewModel: BaseViewModel {
             }
         }
     }
-}
-
-class BaseViewModel: ObservableObject {
-
-    @Published var loading: Bool = false
-    @Published var error: Bool = false
-    @Published var failure: String = ""
 }

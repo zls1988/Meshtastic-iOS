@@ -15,6 +15,10 @@ protocol BLEManagerProtocol: AnyObject {
     func drop()
 }
 
+protocol DeviceConnectionProtocol {
+    func isDeviceConnected() -> Bool
+}
+
 protocol BLEOpProtocol {
     func listen(enable: Bool, onComplite: @escaping (Result<Bool, Error>) -> Void)
     func write(data: Data, onComplite: @escaping (Result<Bool, Error>) -> Void)
@@ -220,6 +224,7 @@ extension BLEManager: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         if let err = error {
             linkedDevice = nil
+            deviseLinkStatus.value = .unknown
             log("BLE device got err (\(err.localizedDescription)) while disconnecting")
         } else {
             log("Linked device has been released")
@@ -350,5 +355,13 @@ extension BLEManager: BLEOpProtocol {
         } else {
             onComplite(.failure(BLEError.deviceNotPaired))
         }
+    }
+}
+
+// MARK: DeviceConnectionProtocol implementation
+
+extension BLEManager: DeviceConnectionProtocol {
+    func isDeviceConnected() -> Bool {
+        return self.linkedDevice != nil && self.deviseLinkStatus.value == .paired
     }
 }

@@ -15,6 +15,5 @@ struct DeviceElement: Hashable {
 extension DeviceElement: Identifiable {
     var id: String {
         self.uuid
-        
     }
 }

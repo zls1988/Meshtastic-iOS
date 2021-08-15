@@ -18,6 +18,9 @@
 		399EBE0426C27392008E6BDA /* BaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399EBE0326C27392008E6BDA /* BaseView.swift */; };
 		39C0BC0F26B8311800CA6A9C /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C0BC0E26B8311800CA6A9C /* Observable.swift */; };
 		39E0A83326C8060300B972B8 /* DeviceElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0A83226C8060300B972B8 /* DeviceElement.swift */; };
+		39E0A83626C862F000B972B8 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0A83526C862F000B972B8 /* MainView.swift */; };
+		39E0A83826C8631400B972B8 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0A83726C8631400B972B8 /* MainViewModel.swift */; };
+		39E0A83A26C8634B00B972B8 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0A83926C8634B00B972B8 /* BaseViewModel.swift */; };
 		6F429B5626B6E6F500E10C6E /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F429B5526B6E6F500E10C6E /* BLEManager.swift */; };
 		D5248FC6251ED2FA00CF50E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */; };
 		D5248FC9251ED2FA00CF50E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5248FC7251ED2FA00CF50E6 /* LaunchScreen.storyboard */; };
@@ -49,6 +52,9 @@
 		399EBE0326C27392008E6BDA /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		39C0BC0E26B8311800CA6A9C /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
 		39E0A83226C8060300B972B8 /* DeviceElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceElement.swift; sourceTree = "<group>"; };
+		39E0A83526C862F000B972B8 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		39E0A83726C8631400B972B8 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		39E0A83926C8634B00B972B8 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		6F429B5526B6E6F500E10C6E /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		D5248FB9251ED2F900CF50E6 /* Meshtastic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meshtastic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5248FC5251ED2FA00CF50E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -114,6 +120,18 @@
 			path = Meshtastic;
 			sourceTree = "<group>";
 		};
+		397538E526C876B400D13DEE /* AppView */ = {
+			isa = PBXGroup;
+			children = (
+				D55D9DBD253EA885005085B4 /* AppView.swift */,
+				D55D9DC5253EA944005085B4 /* ChatView.swift */,
+				D55D9DC8253EA94D005085B4 /* MapView.swift */,
+				0DEE521225D0CEAC003C6EB7 /* Devices */,
+				D55AC06725D099D900151E9D /* Settings */,
+			);
+			path = AppView;
+			sourceTree = "<group>";
+		};
 		399EBE0126C27345008E6BDA /* Wizard */ = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				399EBE0326C27392008E6BDA /* BaseView.swift */,
+				39E0A83926C8634B00B972B8 /* BaseViewModel.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -139,6 +158,15 @@
 				39C0BC0E26B8311800CA6A9C /* Observable.swift */,
 			);
 			path = Util;
+			sourceTree = "<group>";
+		};
+		39E0A83426C862DF00B972B8 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				39E0A83526C862F000B972B8 /* MainView.swift */,
+				39E0A83726C8631400B972B8 /* MainViewModel.swift */,
+			);
+			path = Main;
 			sourceTree = "<group>";
 		};
 		D5248FB0251ED2F900CF50E6 = {
@@ -160,7 +188,6 @@
 		D5248FBB251ED2F900CF50E6 /* Meshtastic */ = {
 			isa = PBXGroup;
 			children = (
-				D55D9DBD253EA885005085B4 /* AppView.swift */,
 				39C0BC0D26B8310C00CA6A9C /* Util */,
 				D5A89FCB253D1EF60012982E /* device-api.md */,
 				D5249004251ED4E700CF50E6 /* README.md */,
@@ -187,12 +214,10 @@
 		D55D9DCE253EA96B005085B4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				397538E526C876B400D13DEE /* AppView */,
+				39E0A83426C862DF00B972B8 /* Main */,
 				399EBE0226C2734C008E6BDA /* Core */,
 				399EBE0126C27345008E6BDA /* Wizard */,
-				D55D9DC5253EA944005085B4 /* ChatView.swift */,
-				D55D9DC8253EA94D005085B4 /* MapView.swift */,
-				0DEE521225D0CEAC003C6EB7 /* Devices */,
-				D55AC06725D099D900151E9D /* Settings */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -322,6 +347,7 @@
 				D55AC0AE25D0A63A00151E9D /* DeviceView.swift in Sources */,
 				0DEE520D25D0BE8B003C6EB7 /* DeviceDetailView.swift in Sources */,
 				D55D9DBE253EA885005085B4 /* AppView.swift in Sources */,
+				39E0A83826C8631400B972B8 /* MainViewModel.swift in Sources */,
 				0D164ED425D1A35600E9B91B /* MeshDevice.swift in Sources */,
 				D5ACF13725CD2ABE005D74C2 /* remote_hardware.pb.swift in Sources */,
 				D55AC0AB25D0A52700151E9D /* DeviceInfo.swift in Sources */,
@@ -334,8 +360,10 @@
 				D5ACF13925CD2ABE005D74C2 /* deviceonly.pb.swift in Sources */,
 				D5971DFA25D0B22C002ED9FF /* ContentView.swift in Sources */,
 				39E0A83326C8060300B972B8 /* DeviceElement.swift in Sources */,
+				39E0A83626C862F000B972B8 /* MainView.swift in Sources */,
 				D55D9DCC253EA95C005085B4 /* SettingsView.swift in Sources */,
 				D5A89FEE253D20130012982E /* LogManager.swift in Sources */,
+				39E0A83A26C8634B00B972B8 /* BaseViewModel.swift in Sources */,
 				39752BB726BB11E5002F4E1A /* WizardSwiftUIView.swift in Sources */,
 				D5ACF13825CD2ABE005D74C2 /* apponly.pb.swift in Sources */,
 				3901C17626C0BD0F0005AC9D /* WizardViewModel.swift in Sources */,
