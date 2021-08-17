@@ -17,6 +17,7 @@ protocol BLEManagerProtocol: AnyObject {
 
 protocol DeviceConnectionProtocol {
     func isDeviceConnected() -> Bool
+    func subscribe(onChange: @escaping (BLEDeviceLinkStatus) -> Void)
 }
 
 protocol BLEOpProtocol {
@@ -87,7 +88,7 @@ class BLEManager: NSObject {
     func scanForDevice(timeout: Int = 5) {
         scanStatus.value = .scanning
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(timeout)) {
-            self.stopScan()
+            self.stopScan(reason: .scanTimeout)
         }
         manager.scanForPeripherals(withServices: meshtasticDeviceServiceUUIDs, options: nil)
     }
@@ -98,9 +99,9 @@ class BLEManager: NSObject {
         scanForDevice()
     }
 
-    private func stopScan() {
+    private func stopScan(reason with: BLEScanningStatus) {
         if manager.isScanning {
-            scanStatus.value = .scanTimeout
+            scanStatus.value = with
             manager.stopScan()
         }
     }
@@ -177,7 +178,7 @@ extension BLEManager: BLEManagerProtocol {
             case .scanTimeout:
                 onComplite(self?.discoveredDevices ?? [])
             default:
-                fatalError("rescan is failed")
+                fatalError("rescan failed")
             }
         }
         self.rescanForDevice()
@@ -230,6 +231,18 @@ extension BLEManager: CBCentralManagerDelegate {
             log("Linked device has been released")
             deviseLinkStatus.value = .unpaired
         }
+    }
+
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        if let err = error {
+            log("BLE device got didFailToConnect err (\(err.localizedDescription))")
+        }
+        deviseLinkStatus.value = .unknown
+        linkedDevice = nil
+    }
+
+    func centralManager(_ central: CBCentralManager, connectionEventDidOccur event: CBConnectionEvent, for peripheral: CBPeripheral) {
+
     }
 }
 
@@ -361,6 +374,12 @@ extension BLEManager: BLEOpProtocol {
 // MARK: DeviceConnectionProtocol implementation
 
 extension BLEManager: DeviceConnectionProtocol {
+    func subscribe(onChange: @escaping  (BLEDeviceLinkStatus) -> Void) {
+        self.deviseLinkStatus.binding(fire: true) { status in
+            onChange(status)
+        }
+    }
+
     func isDeviceConnected() -> Bool {
         return self.linkedDevice != nil && self.deviseLinkStatus.value == .paired
     }
